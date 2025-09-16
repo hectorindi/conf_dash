@@ -3,7 +3,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 
-class DailyInfoModel {
+class TotalRegistrationInfoModel {
   IconData? icon;
   String? title;
   String? totalStorage;
@@ -13,7 +13,7 @@ class DailyInfoModel {
   List<Color>? colors;
   List<FlSpot>? spots;
 
-  DailyInfoModel({
+  TotalRegistrationInfoModel({
     this.icon,
     this.title,
     this.totalStorage,
@@ -24,7 +24,7 @@ class DailyInfoModel {
     this.spots,
   });
 
-  DailyInfoModel.fromJson(Map<String, dynamic> json) {
+  TotalRegistrationInfoModel.fromJson(Map<String, dynamic> json) {
     title = json['title'];
     volumeData = json['volumeData'];
     icon = json['icon'];
@@ -49,8 +49,8 @@ class DailyInfoModel {
   }
 }
 
-List<DailyInfoModel> dailyDatas =
-    dailyData.map((item) => DailyInfoModel.fromJson(item)).toList();
+List<TotalRegistrationInfoModel> dailyDatas =
+    dailyData.map((item) => TotalRegistrationInfoModel.fromJson(item)).toList();
 
 //List<FlSpot> spots = yValues.asMap().entries.map((e) {
 //  return FlSpot(e.key.toDouble(), e.value);
@@ -58,7 +58,7 @@ List<DailyInfoModel> dailyDatas =
 
 var dailyData = [
   {
-    "title": "Employee",
+    "title": "Total Registration",
     "volumeData": 1328,
     "icon": FlutterIcons.user_alt_faw5s,
     "totalStorage": "+ %20",
@@ -104,7 +104,7 @@ var dailyData = [
     ]
   },
   {
-    "title": "On Leave",
+    "title": "Total Abstracts",
     "volumeData": 1328,
     "icon": FlutterIcons.message1_ant,
     "totalStorage": "+ %5",
@@ -147,7 +147,7 @@ var dailyData = [
     ]
   },
   {
-    "title": "Onboarding",
+    "title": "Total Faculty",
     "volumeData": 1328,
     "icon": FlutterIcons.comment_alt_faw5s,
     "totalStorage": "+ %8",
@@ -188,102 +188,5 @@ var dailyData = [
         1,
       )
     ]
-  },
-  {
-    "title": "Open Position",
-    "volumeData": 1328,
-    "icon": FlutterIcons.heart_faw5s,
-    "totalStorage": "+ %8",
-    "color": Color(0xFFd50000),
-    "percentage": 10,
-    "colors": [Color(0xff93291E), Color(0xffED213A)],
-    "spots": [
-      FlSpot(
-        1,
-        3,
-      ),
-      FlSpot(
-        2,
-        4,
-      ),
-      FlSpot(
-        3,
-        1.8,
-      ),
-      FlSpot(
-        4,
-        1.5,
-      ),
-      FlSpot(
-        5,
-        1.0,
-      ),
-      FlSpot(
-        6,
-        2.2,
-      ),
-      FlSpot(
-        7,
-        1.8,
-      ),
-      FlSpot(
-        8,
-        1.5,
-      )
-    ]
-  },
-  {
-    "title": "Efficiency",
-    "volumeData": 5328,
-    "icon": FlutterIcons.bell_faw5s,
-    "totalStorage": "- %5",
-    "color": Color(0xFF00F260),
-    "percentage": 78,
-    "colors": [Color(0xff0575E6), Color(0xff00F260)],
-    "spots": [
-      FlSpot(
-        1,
-        1.3,
-      ),
-      FlSpot(
-        2,
-        1.0,
-      ),
-      FlSpot(
-        3,
-        1.8,
-      ),
-      FlSpot(
-        4,
-        1.5,
-      ),
-      FlSpot(
-        5,
-        1.0,
-      ),
-      FlSpot(
-        6,
-        2.2,
-      ),
-      FlSpot(
-        7,
-        1.8,
-      ),
-      FlSpot(
-        8,
-        1.5,
-      )
-    ]
   }
 ];
-
-//final List<double> yValues = [
-//  2.3,
-//  1.8,
-//  1.9,
-//  1.5,
-//  1.0,
-//  2.2,
-//  1.8,
-//  1.5,
-//];

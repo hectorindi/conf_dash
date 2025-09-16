@@ -1,15 +1,21 @@
 import 'package:admin/core/constants/color_constants.dart';
 import 'package:admin/core/init/provider_list.dart';
+import 'package:admin/firebase_options.dart';
 import 'package:admin/screens/login/login_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+void main() async {
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(MyApp());
 }
 final Future<String> _calculation = Future<String>.delayed(
-    const Duration(seconds: 2),
+    const Duration(seconds: 1),
     () => 'Data Loaded',
   );
 Widget build(BuildContext context) {

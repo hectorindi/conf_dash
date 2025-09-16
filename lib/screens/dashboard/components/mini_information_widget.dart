@@ -9,7 +9,7 @@ class MiniInformationWidget extends StatefulWidget {
     Key? key,
     required this.dailyData,
   }) : super(key: key);
-  final DailyInfoModel dailyData;
+  final TotalRegistrationInfoModel dailyData;
 
   @override
   _MiniInformationWidgetState createState() => _MiniInformationWidgetState();

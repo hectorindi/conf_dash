@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'dart:developer';
 
 ValueNotifier<AuthService> authService = ValueNotifier(AuthService());
 
@@ -13,6 +14,8 @@ class AuthService {
   Stream<User?> get authStateChanges => _auth.authStateChanges();
 
   Future<bool?> signIn(String email, String password) async {
+    log('Attempting sign in: $email, $password');
+    debugger();
     try {
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
         email: email,
@@ -20,7 +23,7 @@ class AuthService {
       );
       return true;
     } catch (e) {
-      //print('Error signing in: $e');
+      print('Error signing in: $e');
       return false;
     }
   }

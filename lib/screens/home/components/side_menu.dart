@@ -1,4 +1,5 @@
 import 'package:admin/core/constants/color_constants.dart';
+import 'package:admin/screens/home/components/expansion_tile_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -31,10 +32,56 @@ class SideMenu extends StatelessWidget {
                 Text("Smart HR - Application")
               ],
             )),
-            DrawerListTile(
-              title: "Dashboard",
-              svgSrc: "assets/icons/menu_dashbord.svg",
-              press: () {},
+            CustomExpansionTileList(
+              elementList: [
+                {
+                  "title": "Master Setup",
+                  "icon": "assets/icons/menu_dashboard.svg",
+                  "state": "/dashboard",
+                  "children": [
+                    {
+                      "title": "Member Category",
+                      "icon": "assets/icons/menu_dashboard.svg",
+                      "state": "/member_category"
+                    },
+                    {
+                      "title": "Delegate Category",
+                      "icon": "assets/icons/menu_dashboard.svg",
+                      "state": "/delegate_category"
+                    },
+                    {
+                      "title": "Abstract Category",
+                      "icon": "assets/icons/menu_dashboard.svg",
+                      "state": "/abstract_category"
+                    },
+                    {
+                      "title": "Abstract Type",
+                      "icon": "assets/icons/menu_dashboard.svg",
+                      "state": "/abstract_type"
+                    },
+                    {
+                      "title": "Session Halls",
+                      "icon": "assets/icons/menu_dashboard.svg",
+                      "state": "/session_halls"
+                    },
+                    {
+                      "title": "Session date",
+                      "icon": "assets/icons/menu_dashboard.svg",
+                      "state": "/session_date"
+                    },
+                    {
+                      "title": "Session Time",
+                      "icon": "assets/icons/menu_dashboard.svg",
+                      "state": "/session_time"
+                    },
+                    {
+                      "title": "Session Role",
+                      "icon": "assets/icons/menu_dashboard.svg",
+                      "state": "/session_role"
+                    }
+                  ]
+                }
+              ],
             ),
             DrawerListTile(
               title: "Posts",

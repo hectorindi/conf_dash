@@ -3,7 +3,7 @@ import 'package:admin/core/widgets/app_button_widget.dart';
 import 'package:admin/core/widgets/input_widget.dart';
 import 'package:admin/screens/home/home_screen.dart';
 import 'package:admin/screens/login/components/slider_widget.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:admin/data/login_service.dart';
 import 'package:flutter/material.dart';
 
 class Login extends StatefulWidget {
@@ -308,9 +308,9 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
               type: ButtonType.PRIMARY,
               text: "Sign In",
               onPressed: () {
-                FirebaseAuth.instance.signInWithEmailAndPassword(
-                  email: emailController.text,
-                  password: passwordController.text,
+                authService.value.signIn(
+                  emailController.text,
+                  passwordController.text,
                 ).then((userCredential) {
                   // Navigate to home screen
                   Navigator.push(
