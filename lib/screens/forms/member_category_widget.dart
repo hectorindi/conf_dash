@@ -11,6 +11,13 @@ class MemberCategoryWidget extends StatefulWidget {
 }
 
 class _MemberCategoryWidgetState extends State<MemberCategoryWidget> {
+  bool _visible = false;
+
+  void _toggle() {
+    setState(() {
+      _visible = !_visible;
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,7 +37,7 @@ class _MemberCategoryWidgetState extends State<MemberCategoryWidget> {
                     Row(
                       children: [
                         Center(
-                          child: Text("Add Member Category", style: Theme.of(context)
+                          child: Text("Member Category", style: Theme.of(context)
                             .textTheme
                             .headlineLarge!
                             .copyWith(color: Colors.white)),
@@ -46,11 +53,7 @@ class _MemberCategoryWidgetState extends State<MemberCategoryWidget> {
                             ),
                           ),
                           onPressed: () {
-                            Navigator.of(context).push(new MaterialPageRoute<Null>(
-                                builder: (BuildContext context) {
-                                  return new AddMemeberCategory();
-                                },
-                                fullscreenDialog: true));
+                            _toggle();
                           },
                           icon: Icon(Icons.add),
                           label: Text(
@@ -60,7 +63,15 @@ class _MemberCategoryWidgetState extends State<MemberCategoryWidget> {
                       ],
                     ),
                     SizedBox(height: 24),
-                    ShowMemeberCategory(),
+                    Visibility(
+                      visible: !_visible,
+                      child: ShowMemeberCategory(),
+                    ),
+                    Visibility(
+                      visible: _visible,
+                      child: AddMemeberCategory(),
+                    ),
+                    SizedBox(height: 24.0),
                   ],
                 )),
           ),

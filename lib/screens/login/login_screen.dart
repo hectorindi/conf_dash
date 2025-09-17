@@ -107,18 +107,6 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                               ],
                             ),
                           ),
-
-                          //Flexible(
-                          //  child: SlideTransition(
-                          //    position: _animationController!.drive(tweenLeft),
-                          //    child: Stack(
-                          //        fit: StackFit.loose,
-                          //        clipBehavior: Clip.none,
-                          //        children: [
-                          //          _registerScreen(context),
-                          //        ]),
-                          //  ),
-                          //),
                         ],
                       ),
                     ),

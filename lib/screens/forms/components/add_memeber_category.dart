@@ -1,13 +1,42 @@
+import 'dart:developer';
+
 import 'package:admin/core/constants/color_constants.dart';
 import 'package:admin/core/utils/colorful_tag.dart';
 import 'package:admin/core/widgets/input_widget.dart';
+import 'package:admin/data/member_service.dart';
 import 'package:admin/models/recent_user_model.dart';
+import 'package:admin/responsive.dart';
 import 'package:flutter/material.dart';
+import 'package:admin/core/utils/Utils.dart';
 
-class AddMemeberCategory extends StatelessWidget {
+class AddMemeberCategory extends StatefulWidget {
   const AddMemeberCategory({
     Key? key,
   }) : super(key: key);
+
+  @override
+  State<AddMemeberCategory> createState() => _AddMemeberCategoryState();
+}
+
+class _AddMemeberCategoryState extends State<AddMemeberCategory> {
+  String? _selectedItem = 'active'; // Variable to hold the selected item
+  TextEditingController categoryController = TextEditingController();
+  bool _isEnabled = true;
+
+  void submitData() {
+    log("Adding Member Category: ${categoryController.text} with status: $_selectedItem by user: ${categoryController.text}");
+    memberService.value.addMemberCategoryToDatabase(
+      categoryController.text,
+      _selectedItem!,
+    );
+    setState(() {
+      _isEnabled = false;
+    });
+    showNewDialog(context, Colors.green, "Member Category Added Successfully");
+    Future.delayed( Duration(seconds: 2), () {
+      Navigator.of(context).pop();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,10 +53,11 @@ class AddMemeberCategory extends StatelessWidget {
       ),
       child: Form(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             InputWidget(
               keyboardType: TextInputType.emailAddress,
+              kController: categoryController,
               onSaved: (String? value) {
                 // This optional block of code can be used to run
                 // code when the user saves the form.
@@ -42,86 +72,50 @@ class AddMemeberCategory extends StatelessWidget {
                     : null;
               },
 
-              topLabel: "Name",
+              topLabel: "Category",
 
               hintText: "Enter Name",
               // prefixIcon: FlutterIcons.chevron_left_fea,
             ),
-            SizedBox(height: 8.0),
-            InputWidget(
-              keyboardType: TextInputType.emailAddress,
-              onSaved: (String? value) {
-                // This optional block of code can be used to run
-                // code when the user saves the form.
-              },
-              onChanged: (String? value) {
-                // This optional block of code can be used to run
-                // code when the user saves the form.
-              },
-              validator: (String? value) {
-                return (value != null && value.contains('@'))
-                    ? 'Do not use the @ char.'
-                    : null;
-              },
-
-              topLabel: "Email",
-
-              hintText: "Enter E-mail",
-              // prefixIcon: FlutterIcons.chevron_left_fea,
+            SizedBox(height: 16.0),
+            Text(          
+              "Status",
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyMedium!
+                  .copyWith(fontSize: 16),
             ),
-            SizedBox(height: 8.0),
-            InputWidget(
-              topLabel: "Password",
-              obscureText: true,
-              hintText: "Enter Password",
-              onSaved: (String? uPassword) {},
-              onChanged: (String? value) {},
-              validator: (String? value) {},
-            ),
-            SizedBox(height: 24.0),
-            SizedBox(height: 24.0),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Row(
-                  children: <Widget>[
-                    Checkbox(
-                      value: false,
-                      onChanged: (bool? value) {
-                        
-                      },
-                    ),
-                    Text("Remember Me")
-                  ],
+            DropdownButton(
+            value: _selectedItem, // Set the currently selected item
+              items: <DropdownMenuItem<String>>[
+                DropdownMenuItem<String>(
+                  value: 'active',
+                  child: Text('Active'),
                 ),
-              ],
-            ),
+                DropdownMenuItem<String>(
+                  value: 'inactive',
+                  child: Text('Inactive'),
+                ),
+            ],
+            onChanged: (String? value) {
+              // This is called when the user selects an item.
+              setState(() {
+                _selectedItem = value; // Update the selected item
+              });
+            }),
             SizedBox(height: 24.0),
-            Center(
-              child: Wrap(
-                runAlignment: WrapAlignment.center,
-                crossAxisAlignment: WrapCrossAlignment.center,
-                children: [
-                  Text(
-                    "Already have an account?",
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyMedium!
-                        .copyWith(fontWeight: FontWeight.w300),
-                  ),
-                  SizedBox(
-                    width: 8,
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      
-                    },
-                    child: Text("Sign In",
-                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                            fontWeight: FontWeight.w400, color: greenColor)),
-                  )
-                ],
+            ElevatedButton(
+              style: TextButton.styleFrom(
+                backgroundColor: Colors.green,
+                foregroundColor: Colors.white,
+                padding: EdgeInsets.symmetric(
+                  horizontal: defaultPadding * 1.5,
+                  vertical:
+                      defaultPadding / (Responsive.isMobile(context) ? 2 : 1),
+                ),
               ),
+              onPressed: _isEnabled ? submitData : null,
+              child: Text("Submit"),
             ),
           ],
         ),
