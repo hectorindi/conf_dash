@@ -44,8 +44,8 @@ class _ShowMemberCategoryState extends State<ShowMemberCategory> {
                 ),
               ],
               rows: List.generate(
-                widget.memberData.length,
-                (index) => recentUserDataRow(widget.memberData[index]),
+                widget!.memberData!.length,
+                (index) => recentUserDataRow(widget!.memberData![index]),
               ),
             ),
           ),
@@ -67,7 +67,7 @@ DataRow recentUserDataRow(Map<String, dynamic> memeberCategory) {
                 ),
           ),
           child: Text(memeberCategory['category']!))),
-      DataCell(Text(memeberCategory['createdAr']!.toString())),
+      DataCell(Text(memeberCategory['createdAt']!.toString())),
       DataCell(Text(memeberCategory['status']!)),
     ],
   );

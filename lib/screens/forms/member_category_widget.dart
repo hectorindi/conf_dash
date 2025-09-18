@@ -69,10 +69,10 @@ class _MemberCategoryWidgetState extends State<MemberCategoryWidget> {
                       child: FutureBuilder(
                         future: memberService.value.getMemberCategoryFromDatabase(),
                         builder: (context, snapshot) {
-                          if (snapshot.connectionState == ConnectionState.waiting) {
+                          if (snapshot.connectionState == ConnectionState.waiting || snapshot.data == null) {
                             return Center(child: CircularProgressIndicator());
                           } else {
-                            final memberData = snapshot.data as List<Map<String, dynamic>>;
+                            final List<Map<String, dynamic>> memberData = snapshot.data as List<Map<String, dynamic>>;
                             log("Member Data: $memberData");
                             return ShowMemberCategory(memberData: memberData);
                           }
