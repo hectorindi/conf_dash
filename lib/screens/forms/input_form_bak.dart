@@ -199,8 +199,8 @@
 //                                           _formKey.currentState!.save();
 //                                           _user.save();
 //                                           _showDialog(context);
-//                                           print(_user);
-//                                           print(_user.firstName);
+//                                           log(_user);
+//                                           log(_user.firstName);
 //                                         }
 //                                       },
 //                                       child: Text(

@@ -23,7 +23,7 @@ class AuthService {
       );
       return true;
     } catch (e) {
-      print('Error signing in: $e');
+      log('Error signing in: $e');
       return false;
     }
   }
@@ -55,7 +55,7 @@ class AuthService {
   //     });
   //     return LoginObject(name: userCredential.user?.displayName ?? '', successful: true, uid: userCredential.user?.uid);
   //   } catch (e) {
-  //     //print('Error signing up: $e');
+  //     //log('Error signing up: $e');
   //     var errorMessage = e.toString().split(  '] ').last; // Extract message after '] '
   //     return LoginObject(name: email, successful: false, uid: null, error: errorMessage);
   //   }
@@ -64,10 +64,10 @@ class AuthService {
   Future<bool> signOut() async {
     try {
       await _auth.signOut();
-      //print("Sign Out Successful");
+      //log("Sign Out Successful");
       return true;
     } catch (e) {
-      //print('Error signing out: $e');
+      //log('Error signing out: $e');
       return false;
     }
     

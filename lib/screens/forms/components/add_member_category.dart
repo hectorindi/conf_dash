@@ -9,16 +9,16 @@ import 'package:admin/responsive.dart';
 import 'package:flutter/material.dart';
 import 'package:admin/core/utils/Utils.dart';
 
-class AddMemeberCategory extends StatefulWidget {
-  const AddMemeberCategory({
+class AddMemberCategory extends StatefulWidget {
+  const AddMemberCategory({
     Key? key,
   }) : super(key: key);
 
   @override
-  State<AddMemeberCategory> createState() => _AddMemeberCategoryState();
+  State<AddMemberCategory> createState() => _AddMemberCategoryState();
 }
 
-class _AddMemeberCategoryState extends State<AddMemeberCategory> {
+class _AddMemberCategoryState extends State<AddMemberCategory> {
   String? _selectedItem = 'active'; // Variable to hold the selected item
   TextEditingController categoryController = TextEditingController();
   bool _isEnabled = true;
@@ -33,7 +33,7 @@ class _AddMemeberCategoryState extends State<AddMemeberCategory> {
       _isEnabled = false;
     });
     showNewDialog(context, Colors.green, "Member Category Added Successfully");
-    Future.delayed( Duration(seconds: 2), () {
+    Future.delayed( Duration(seconds: 1), () {
       Navigator.of(context).pop();
     });
   }

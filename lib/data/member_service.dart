@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:admin/models/member_object.dart';
 import 'package:admin/data/login_service.dart';
-import 'package:admin/screens/forms/components/add_memeber_category.dart';
+import 'package:admin/screens/forms/components/add_member_category.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -46,7 +46,7 @@ class MemberService {
         _member = member;
       }
     } catch (e) {
-      print('Error signing in: $e');
+      log('Error signing in: $e');
     }
     return member;
   }
@@ -68,7 +68,7 @@ class MemberService {
       });
       return true;
     } catch (e) {
-      //print('Error signing in: $e');
+      //log('Error signing in: $e');
       return false;
     }
   }
@@ -77,15 +77,34 @@ class MemberService {
     try {
       CollectionReference ref = _firestore.collection('aios_0925');
       log("Adding Member Category: $category with status: $status by user: $category");
-      await ref.doc("member_category").set({
+      await ref.doc("member_category").collection("mem_ct").add({
         'category': category,
         'status': status,
         'createdAt': FieldValue.serverTimestamp(),
       });
       return true;
     } catch (e) {
-      print('Error adding member category: $e');
+      log('Error adding member category: $e');
       return false;
     }
+  }
+
+  Future<List <Map<String, dynamic>>> getMemberCategoryFromDatabase() async {
+    try {
+      CollectionReference ref = _firestore.collection('aios_0925').doc("member_category").collection("mem_ct");
+      log("Fetching Member Category");
+      QuerySnapshot querySnapshot = await ref.get();
+      if (querySnapshot.docs.isNotEmpty) {
+        querySnapshot.docs.forEach((doc) {
+          Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+          log("Member Category: ${data['category']}, Status: ${data['status']}");
+        });
+        return querySnapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+      }
+    } catch (e) {
+      log('Error fetching member category: $e');
+      return [{errorText: e.toString()}];
+    }
+    return [{errorText: "Something went wrong"}];
   }
 }

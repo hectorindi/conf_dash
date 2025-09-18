@@ -1,6 +1,6 @@
 import 'package:admin/core/constants/color_constants.dart';
 import 'package:admin/responsive.dart';
-import 'package:admin/screens/forms/components/show_memeber_category.dart';
+import 'package:admin/screens/forms/components/show_member_category.dart';
 import 'package:admin/screens/forms/input_form.dart';
 import 'package:flutter/material.dart';
 
@@ -33,7 +33,7 @@ class _FormMemberCategoryState extends State<FormMemberCategory> {
                         .copyWith(color: Colors.white)),
                     ),
                     SizedBox(height: 24),
-                    ShowMemeberCategory(),
+                    ShowMemberCategory(memberData: [{}]),
                   ],
                 )),
           ),

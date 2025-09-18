@@ -1,9 +1,10 @@
 import 'package:admin/core/constants/color_constants.dart';
+import 'package:admin/data/member_service.dart';
 import 'package:admin/responsive.dart';
-import 'package:admin/screens/forms/components/add_memeber_category.dart';
-import 'package:admin/screens/forms/components/show_memeber_category.dart';
-import 'package:admin/screens/forms/input_form.dart';
+import 'package:admin/screens/forms/components/add_member_category.dart';
+import 'package:admin/screens/forms/components/show_member_category.dart';
 import 'package:flutter/material.dart';
+import 'dart:developer';
 
 class MemberCategoryWidget extends StatefulWidget {
   @override
@@ -65,11 +66,22 @@ class _MemberCategoryWidgetState extends State<MemberCategoryWidget> {
                     SizedBox(height: 24),
                     Visibility(
                       visible: !_visible,
-                      child: ShowMemeberCategory(),
+                      child: FutureBuilder(
+                        future: memberService.value.getMemberCategoryFromDatabase(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return Center(child: CircularProgressIndicator());
+                          } else {
+                            final memberData = snapshot.data as List<Map<String, dynamic>>;
+                            log("Member Data: $memberData");
+                            return ShowMemberCategory(memberData: memberData);
+                          }
+                        },
+                      ),
                     ),
                     Visibility(
                       visible: _visible,
-                      child: AddMemeberCategory(),
+                      child: AddMemberCategory(),
                     ),
                     SizedBox(height: 24.0),
                   ],

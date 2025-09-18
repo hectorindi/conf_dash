@@ -1,5 +1,6 @@
 import 'package:admin/core/constants/color_constants.dart';
 import 'package:admin/core/init/provider_list.dart';
+import 'package:admin/data/member_service.dart';
 import 'package:admin/firebase_options.dart';
 import 'package:admin/screens/login/login_screen.dart';
 import 'package:flutter/material.dart';
@@ -14,15 +15,13 @@ void main() async {
   );
   runApp(MyApp());
 }
-final Future<String> _calculation = Future<String>.delayed(
-    const Duration(seconds: 1),
-    () => 'Data Loaded',
-  );
+final Future<void> _getMemberData = memberService.value.getMemberDetails();
+
 Widget build(BuildContext context) {
   return MultiProvider(
       providers: [...ApplicationProvider.instance.dependItems],
       child: FutureBuilder(
-        future: _calculation,
+        future: _getMemberData,
         builder: (context, snapshot) {
           return MyApp();
         },

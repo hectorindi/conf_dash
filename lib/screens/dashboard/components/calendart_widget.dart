@@ -3,7 +3,7 @@ import 'package:admin/core/models/data.dart';
 import 'package:admin/screens/dashboard/components/calendar_list_widget.dart';
 
 import 'package:flutter/material.dart';
-
+import 'dart:developer';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -68,7 +68,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                   InkWell(
                     onTap: () {
                       setState(() {
-                        print(_focusedDay);
+                        //log(_focusedDay);
                         _focusedDay =
                             DateTime(_focusedDay.year, _focusedDay.month + 1);
                       });

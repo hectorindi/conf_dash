@@ -3,11 +3,19 @@ import 'package:admin/core/utils/colorful_tag.dart';
 import 'package:admin/models/recent_user_model.dart';
 import 'package:flutter/material.dart';
 
-class ShowMemeberCategory extends StatelessWidget {
-  const ShowMemeberCategory({
+class ShowMemberCategory extends StatefulWidget {
+  const ShowMemberCategory({
     Key? key,
+    required this.memberData,
   }) : super(key: key);
 
+  final List<Map<String, dynamic>> memberData;
+
+  @override
+  State<ShowMemberCategory> createState() => _ShowMemberCategoryState();
+}
+
+class _ShowMemberCategoryState extends State<ShowMemberCategory> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -36,8 +44,8 @@ class ShowMemeberCategory extends StatelessWidget {
                 ),
               ],
               rows: List.generate(
-                recentUsers.length,
-                (index) => recentUserDataRow(recentUsers[index]),
+                widget.memberData.length,
+                (index) => recentUserDataRow(widget.memberData[index]),
               ),
             ),
           ),
@@ -47,20 +55,20 @@ class ShowMemeberCategory extends StatelessWidget {
   }
 }
 
-DataRow recentUserDataRow(RecentUser userInfo) {
+DataRow recentUserDataRow(Map<String, dynamic> memeberCategory) {
   return DataRow(
     cells: [
       DataCell(Container(
           padding: EdgeInsets.all(5),
           decoration: BoxDecoration(
-            color: getRoleColor(userInfo.role).withOpacity(.2),
-            border: Border.all(color: getRoleColor(userInfo.role)),
+            color:  Colors.red,
+            border: Border.all(color:  Colors.red),
             borderRadius: BorderRadius.all(Radius.circular(5.0) //
                 ),
           ),
-          child: Text(userInfo.role!))),
-      DataCell(Text(userInfo.date!)),
-      DataCell(Text(userInfo.posts!)),
+          child: Text(memeberCategory['category']!))),
+      DataCell(Text(memeberCategory['createdAr']!.toString())),
+      DataCell(Text(memeberCategory['status']!)),
     ],
   );
 }

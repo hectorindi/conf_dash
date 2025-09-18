@@ -8,6 +8,6 @@ class LoginObject {
 
   // You can also add methods to your custom object
   void printDetails() {
-    //print('Name: $name, Successful: $successful');
+    //log('Name: $name, Successful: $successful');
   }
 }

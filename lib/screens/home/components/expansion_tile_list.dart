@@ -22,7 +22,6 @@ class _DrawerState extends State<CustomExpansionTileList> {
   List<Widget> _getChildren(final List<dynamic> elementList) {
     List<Widget> children = [];
     elementList.toList().asMap().forEach((index, element) {
-      log(" The element is " + element.toString());
       int selected = 0;
       final subMenuChildren = <Widget>[];
       try {
@@ -107,7 +106,7 @@ class _DrawerState extends State<CustomExpansionTileList> {
           ),
         );
       } catch (err) {
-        print('Caught error: $err');
+        log('Caught error: $err');
       }
     });
     return children;
