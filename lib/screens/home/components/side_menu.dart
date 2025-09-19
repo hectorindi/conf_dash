@@ -29,7 +29,7 @@ class SideMenu extends StatelessWidget {
                 SizedBox(
                   height: defaultPadding,
                 ),
-                Text("Smart HR - Application")
+                Text("Confrence Dashboard")
               ],
             )),
             CustomExpansionTileList(

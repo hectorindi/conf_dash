@@ -18,11 +18,10 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
       .chain(CurveTween(curve: Curves.ease));
   var tweenRight = Tween<Offset>(begin: Offset(0, 0), end: Offset(2, 0))
       .chain(CurveTween(curve: Curves.ease));
-
+      
   AnimationController? _animationController;
-
-  var _isMoved = false;
-
+  bool _isMoved = false;
+  bool _isEnabled = true;
   bool isChecked = false;
 
   TextEditingController passwordController = TextEditingController();
@@ -42,6 +41,24 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
   void dispose() {
     _animationController?.dispose();
     super.dispose();
+  }
+
+  void _onLoginPressed() {
+      setState(() {
+        _isEnabled = false;
+      });
+      authService.value.signIn(
+          emailController.text,
+          passwordController.text,
+        ).then((userCredential) {
+          // Navigate to home screen
+          Navigator.push(
+             context,
+            MaterialPageRoute(builder: (context) => HomeScreen()),
+          );
+      }).catchError((error) {
+            // Handle error
+      });
   }
 
   @override
@@ -295,20 +312,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
             AppButton(
               type: ButtonType.PRIMARY,
               text: "Sign In",
-              onPressed: () {
-                authService.value.signIn(
-                  emailController.text,
-                  passwordController.text,
-                ).then((userCredential) {
-                  // Navigate to home screen
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => HomeScreen()),
-                  );
-                }).catchError((error) {
-                  // Handle error
-                });
-              },
+              onPressed: _isEnabled ? _onLoginPressed : null,
             ),
             SizedBox(height: 24.0),
             Row(

@@ -1,17 +1,17 @@
 import 'package:admin/core/constants/color_constants.dart';
 import 'package:admin/data/database_services.dart';
+import 'package:admin/screens/forms/components/show_member_delegate_type.dart';
+import 'package:admin/screens/forms/components/add_member_delegate_type.dart';
 import 'package:admin/responsive.dart';
-import 'package:admin/screens/forms/components/add_member_category.dart';
-import 'package:admin/screens/forms/components/show_member_category.dart';
 import 'package:flutter/material.dart';
 import 'dart:developer';
 
-class MemberCategoryWidget extends StatefulWidget {
+class MemberDelegateWidget extends StatefulWidget {
   @override
-  _MemberCategoryWidgetState createState() => _MemberCategoryWidgetState();
+  _MemberDelegateWidgetState createState() => _MemberDelegateWidgetState();
 }
 
-class _MemberCategoryWidgetState extends State<MemberCategoryWidget> {
+class _MemberDelegateWidgetState extends State<MemberDelegateWidget> {
   bool _visible = false;
 
   void _toggle() {
@@ -38,7 +38,7 @@ class _MemberCategoryWidgetState extends State<MemberCategoryWidget> {
                     Row(
                       children: [
                         Center(
-                          child: Text("Member Category", style: Theme.of(context)
+                          child: Text("Category Type", style: Theme.of(context)
                             .textTheme
                             .headlineLarge!
                             .copyWith(color: Colors.white)),
@@ -58,7 +58,7 @@ class _MemberCategoryWidgetState extends State<MemberCategoryWidget> {
                           },
                           icon: Icon(Icons.add),
                           label: Text(
-                            "Add New",
+                            "Add Delegate Type",
                           ),
                         ),
                       ],
@@ -67,21 +67,21 @@ class _MemberCategoryWidgetState extends State<MemberCategoryWidget> {
                     Visibility(
                       visible: !_visible,
                       child: FutureBuilder(
-                        future: memberService.value.getMemberCategoryFromDatabase(),
+                        future: memberService.value.getMemberDelegateTypeFromDatabase(),
                         builder: (context, snapshot) {
                           if (snapshot.connectionState == ConnectionState.waiting || snapshot.data == null) {
                             return Center(child: CircularProgressIndicator());
                           } else {
                             final List<Map<String, dynamic>> memberData = snapshot.data as List<Map<String, dynamic>>;
                             log("Member Data: $memberData");
-                            return ShowMemberCategory(memberData: memberData);
+                            return ShowMemberDelegateType(memberData: memberData);
                           }
                         },
                       ),
                     ),
                     Visibility(
                       visible: _visible,
-                      child: AddMemberCategory(),
+                      child: AddMemberDelegateType(),
                     ),
                     SizedBox(height: 24.0),
                   ],

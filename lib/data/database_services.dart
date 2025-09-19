@@ -2,18 +2,18 @@ import 'dart:developer';
 
 import 'package:admin/models/member_object.dart';
 import 'package:admin/data/login_service.dart';
-import 'package:admin/screens/forms/components/add_member_category.dart';
+import 'package:admin/core/constants/app_constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:flutter/material.dart';
 import 'dart:convert';
 
-ValueNotifier<MemberService> memberService = ValueNotifier(MemberService());
+ValueNotifier<DatabaseServices> memberService = ValueNotifier(DatabaseServices());
 
 var errorText = "";
 
-class MemberService {
+class DatabaseServices {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   MemberObject? _member;
   MemberObject get currentMember => _member!;
@@ -75,11 +75,28 @@ class MemberService {
 
   Future<bool?> addMemberCategoryToDatabase(String category,String status) async {
     try {
-      CollectionReference ref = _firestore.collection('aios_0925');
+      CollectionReference ref = _firestore.collection(AppConstants.eventCollectionName);
       log("Adding Member Category: $category with status: $status by user: $category");
-      await ref.doc("member_category").collection("mem_ct").add({
+      await ref.doc(AppConstants.memberCategoryDocName).collection(AppConstants.memberCategoryColName).add({
         'category': category,
         'status': status,
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+      return true;
+    } catch (e) {
+      log('Error adding member category: $e');
+      return false;
+    }
+  }
+
+  Future<bool?> addDelegateTypeToDatabase(String type,String status,double rate) async {
+    try {
+      CollectionReference ref = _firestore.collection(AppConstants.eventCollectionName);
+      log("Adding delegate type : $type with status: $status by user: $type");
+      await ref.doc(AppConstants.delegateCatTypeDocName).collection(AppConstants.delegateCatTypeColName).add({
+        'delegateType': type,
+        'status': status,
+        'rate': rate,
         'createdAt': FieldValue.serverTimestamp(),
       });
       return true;
@@ -103,6 +120,38 @@ class MemberService {
       }
     } catch (e) {
       log('Error fetching member category: $e');
+      return [{errorText: e.toString()}];
+    }
+    return [{errorText: "Something went wrong"}];
+  }
+
+  Future<List<Map<String, dynamic>>> getMemberDelegateTypeFromDatabase() async {
+    try {
+      CollectionReference ref = _firestore.collection('aios_0925').doc("delegate_category").collection("ct_type");
+      List<Map<String, dynamic>> memberCategory = await getMemberCategoryFromDatabase();
+
+      log("Fetching Member Category");
+      QuerySnapshot querySnapshot = await ref.get();
+      if (querySnapshot.docs.isNotEmpty) {
+        // Convert the docs to list of Map
+        List<Map<String, dynamic>> finalList = querySnapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+        
+        // Wait for all async operations to complete
+        await Future.wait(
+          finalList.map((action) async {
+            DocumentReference dr = action["category"] as DocumentReference;
+            QuerySnapshot dataSnapshot = await dr.collection(dr.id).get();
+            // You can process dataSnapshot here
+            // You might want to add the results back to your action map
+            action['memberCategory'] = memberCategory;
+            log("data is $action.toString()");
+          })
+        );
+
+        return finalList;
+      }
+    } catch (e) {
+      log('Error fetching member delegate type: $e');
       return [{errorText: e.toString()}];
     }
     return [{errorText: "Something went wrong"}];

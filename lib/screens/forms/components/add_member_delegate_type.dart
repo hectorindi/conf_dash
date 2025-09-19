@@ -9,30 +9,30 @@ import 'package:admin/responsive.dart';
 import 'package:flutter/material.dart';
 import 'package:admin/core/utils/Utils.dart';
 
-class AddMemberCategory extends StatefulWidget {
-  const AddMemberCategory({
+class AddMemberDelegateType extends StatefulWidget {
+  const AddMemberDelegateType({
     Key? key,
   }) : super(key: key);
 
   @override
-  State<AddMemberCategory> createState() => _AddMemberCategoryState();
+  State<AddMemberDelegateType> createState() => _AddMemberDelegateTypeState();
 }
 
-class _AddMemberCategoryState extends State<AddMemberCategory> {
+class _AddMemberDelegateTypeState extends State<AddMemberDelegateType> {
   String? _selectedItem = 'active'; // Variable to hold the selected item
-  TextEditingController categoryController = TextEditingController();
+  TextEditingController delegateTypeController = TextEditingController();
   bool _isEnabled = true;
 
   void submitData() {
-    log("Adding Member Category: ${categoryController.text} with status: $_selectedItem by user: ${categoryController.text}");
+    log("Adding DelegateType type : ${delegateTypeController.text} with status: $_selectedItem by user: ${delegateTypeController.text}");
     memberService.value.addMemberCategoryToDatabase(
-      categoryController.text,
+      delegateTypeController.text,
       _selectedItem!,
     );
     setState(() {
       _isEnabled = false;
     });
-    showNewDialog(context, Colors.green, "Member Category Added Successfully");
+    showNewDialog(context, Colors.green, "Member delegate type Added Successfully");
     Future.delayed( Duration(seconds: 1), () {
       Navigator.of(context).pop();
     });
@@ -57,7 +57,7 @@ class _AddMemberCategoryState extends State<AddMemberCategory> {
           children: [
             InputWidget(
               keyboardType: TextInputType.emailAddress,
-              kController: categoryController,
+              kController: delegateTypeController,
               onSaved: (String? value) {
                 // This optional block of code can be used to run
                 // code when the user saves the form.

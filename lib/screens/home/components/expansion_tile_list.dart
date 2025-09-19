@@ -1,4 +1,5 @@
 import 'package:admin/screens/forms/member_category_widget.dart';
+import 'package:admin/screens/forms/member_delegate_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'dart:developer';
@@ -59,16 +60,17 @@ class _DrawerState extends State<CustomExpansionTileList> {
                     break;
                   case '/delegate_category':
                     _selectedPageIndex = 2;
-                    // _pageController.jumpToPage(2);
                     WidgetsBinding.instance.addPostFrameCallback((_) {
                       if (_pageController.hasClients) {
-                        _pageController.animateToPage(2,
-                            duration: Duration(milliseconds: 1),
-                            curve: Curves.easeInOut);
+                        _pageController.animateToPage(1, duration: Duration(milliseconds: 1), curve: Curves.easeInOut);
                       }
                     });
-                    //c.title.value = "Fund Source";
-                    Navigator.pop(context);
+                    //c.title.value = "Fund Type";
+                    Navigator.of(context).push(new MaterialPageRoute<Null>(
+                    builder: (BuildContext context) {
+                      return new MemberDelegateWidget();
+                    },
+                    fullscreenDialog: true));
                     break;
                 }
               })

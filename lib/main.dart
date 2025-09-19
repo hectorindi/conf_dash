@@ -1,6 +1,6 @@
 import 'package:admin/core/constants/color_constants.dart';
 import 'package:admin/core/init/provider_list.dart';
-import 'package:admin/data/member_service.dart';
+import 'package:admin/data/database_services.dart';
 import 'package:admin/firebase_options.dart';
 import 'package:admin/screens/login/login_screen.dart';
 import 'package:flutter/material.dart';
