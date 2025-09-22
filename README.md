@@ -25,3 +25,9 @@ This flutter dashboard library is versatile; it's tailored to work seamlessly on
 ![Preview](/gif.gif)
 
 ![App UI](/ui.png)
+
+
+**useful commands**
+flutter build web --release --no-source-maps --no-tree-shake-icons
+
+firebase deploy --only hosting

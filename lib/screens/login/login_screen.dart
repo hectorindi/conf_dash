@@ -43,43 +43,38 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
     super.dispose();
   }
 
-  void _onLoginPressed() {
+void _onLoginPressed() {
+  if (!_isEnabled) return;
+  
   setState(() {
     _isEnabled = false;
   });
-  
-  try {
-    // Replace direct auth service call with Future
-    Future(() => authService.value.signIn(
-      emailController.text,
-      passwordController.text,
-    )).then((userCredential) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => HomeScreen()),
-      );
-    }).catchError((error) {
-      setState(() {
-        _isEnabled = true;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(error.toString()),
-          backgroundColor: Colors.red,
-        ),
-      );
-    });
-  } catch (e) {
-    setState(() {
-      _isEnabled = true;
-    });
+
+  Future(() => authService.value.signIn(
+    emailController.text,
+    passwordController.text,
+  ))
+  .then((userCredential) {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => HomeScreen()),
+    );
+  })
+  .catchError((error) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('An unexpected error occurred'),
+        content: Text(error.toString()),
         backgroundColor: Colors.red,
       ),
     );
-  }
+  })
+  .whenComplete(() {
+    if (mounted) {
+      setState(() {
+        _isEnabled = true;
+      });
+    }
+  });
 }
 
 @override
@@ -318,10 +313,19 @@ Widget build(BuildContext context) {
             },
           ),
           SizedBox(height: 24.0),
-          AppButton(
-            type: ButtonType.PRIMARY,
-            text: "Sign In",
-            onPressed: _isEnabled ? _onLoginPressed : null,
+          Container(
+            height: 48,
+            child: _isEnabled
+              ? AppButton(
+                  type: ButtonType.PRIMARY,
+                  text: "Sign In",
+                  onPressed: _onLoginPressed,
+                )
+              : Center(
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(greenColor),
+                  ),
+                ),
           ),
           SizedBox(height: 16.0),
           Row(
