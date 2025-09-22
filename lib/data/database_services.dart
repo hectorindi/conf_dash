@@ -1,4 +1,4 @@
-import 'dart:developer';
+//import 'dart:developer';
 
 import 'package:admin/models/member_object.dart';
 import 'package:admin/data/login_service.dart';
@@ -46,7 +46,7 @@ class DatabaseServices {
         _member = member;
       }
     } catch (e) {
-      log('Error signing in: $e');
+      //log('Error signing in: $e');
     }
     return member;
   }
@@ -68,7 +68,7 @@ class DatabaseServices {
       });
       return true;
     } catch (e) {
-      //log('Error signing in: $e');
+      ////log('Error signing in: $e');
       return false;
     }
   }
@@ -76,7 +76,7 @@ class DatabaseServices {
   Future<bool?> addMemberCategoryToDatabase(String category,String status) async {
     try {
       CollectionReference ref = _firestore.collection(AppConstants.eventCollectionName);
-      log("Adding Member Category: $category with status: $status by user: $category");
+      //log("Adding Member Category: $category with status: $status by user: $category");
       await ref.doc(AppConstants.memberCategoryDocName).collection(AppConstants.memberCategoryColName).add({
         'category': category,
         'status': status,
@@ -84,7 +84,7 @@ class DatabaseServices {
       });
       return true;
     } catch (e) {
-      log('Error adding member category: $e');
+      //log('Error adding member category: $e');
       return false;
     }
   }
@@ -93,7 +93,7 @@ class DatabaseServices {
     try {
       CollectionReference ref = _firestore.collection(AppConstants.eventCollectionName);
        DocumentReference userRef = _firestore.collection('users').doc(uid);
-      log("Adding delegate type : $type with status: $status by user: $type");
+      //log("Adding delegate type : $type with status: $status by user: $type");
       await ref.doc(AppConstants.delegateCatTypeDocName).collection(AppConstants.delegateCatTypeColName).add({
         'delegate_type': type,
         'category': userRef,
@@ -103,7 +103,7 @@ class DatabaseServices {
       });
       return true;
     } catch (e) {
-      log('Error adding member category: $e');
+      //log('Error adding member category: $e');
       return false;
     }
   }
@@ -111,7 +111,7 @@ class DatabaseServices {
   Future<List <Map<String, dynamic>>> getMemberCategoryFromDatabase() async {
     try {
       CollectionReference ref = _firestore.collection('aios_0925').doc("member_category").collection("mem_ct");
-      log("Fetching Member Category");
+      //log("Fetching Member Category");
       QuerySnapshot querySnapshot = await ref.get();
       if (querySnapshot.docs.isNotEmpty) {
         List<Map<String, dynamic>> finalData = [];
@@ -119,13 +119,13 @@ class DatabaseServices {
           Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
           data['uid'] = doc.id;
           finalData.add(data);
-          log("Member Category: ${data['category']}, Status: ${data['status']}");
+          //log("Member Category: ${data['category']}, Status: ${data['status']}");
         });
         return finalData;
         //return querySnapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
       }
     } catch (e) {
-      log('Error fetching member category: $e');
+      //log('Error fetching member category: $e');
       return [{errorText: e.toString()}];
     }
     return [{errorText: "Something went wrong"}];
@@ -135,7 +135,7 @@ class DatabaseServices {
     try {
       CollectionReference ref = _firestore.collection('aios_0925').doc("delegate_category").collection("ct_type");
 
-      log("Fetching Member Category");
+      //log("Fetching Member Category");
       QuerySnapshot querySnapshot = await ref.get();
       if (querySnapshot.docs.isNotEmpty) {
         // Convert the docs to list of Map
@@ -150,7 +150,7 @@ class DatabaseServices {
             // You can process dataSnapshot here
             // You might want to add the results back to your action map
             action['memberCategory'] = memberCategory;
-            log("data is $action.toString()");
+            //log("data is $action.toString()");
           })
         );
 
@@ -159,7 +159,7 @@ class DatabaseServices {
         return [{"error": "Something went wrong"}];    
       }
     } catch (e) {
-      log('Error fetching member delegate type: $e');
+      //log('Error fetching member delegate type: $e');
       return [{errorText: e.toString()}];
     }
     return [{"error": "Something went wrong"}];

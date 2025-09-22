@@ -2,7 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'dart:developer';
+//import 'dart:developer';
 
 ValueNotifier<AuthService> authService = ValueNotifier(AuthService());
 
@@ -14,8 +14,7 @@ class AuthService {
   Stream<User?> get authStateChanges => _auth.authStateChanges();
 
   Future<bool?> signIn(String email, String password) async {
-    log('Attempting sign in: $email, $password');
-    debugger();
+    //log('Attempting sign in: $email, $password');
     try {
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
         email: email,
@@ -23,7 +22,7 @@ class AuthService {
       );
       return true;
     } catch (e) {
-      log('Error signing in: $e');
+      //log('Error signing in: $e');
       return false;
     }
   }
@@ -55,7 +54,7 @@ class AuthService {
   //     });
   //     return LoginObject(name: userCredential.user?.displayName ?? '', successful: true, uid: userCredential.user?.uid);
   //   } catch (e) {
-  //     //log('Error signing up: $e');
+  //     ////log('Error signing up: $e');
   //     var errorMessage = e.toString().split(  '] ').last; // Extract message after '] '
   //     return LoginObject(name: email, successful: false, uid: null, error: errorMessage);
   //   }
@@ -64,10 +63,10 @@ class AuthService {
   Future<bool> signOut() async {
     try {
       await _auth.signOut();
-      //log("Sign Out Successful");
+      ////log("Sign Out Successful");
       return true;
     } catch (e) {
-      //log('Error signing out: $e');
+      ////log('Error signing out: $e');
       return false;
     }
     

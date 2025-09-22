@@ -3,7 +3,7 @@ import 'package:admin/core/widgets/app_button_widget.dart';
 import 'package:admin/models/daily_info_model.dart';
 import 'package:admin/responsive.dart';
 import 'package:flutter/material.dart';
-import 'dart:developer';
+//import 'dart:developer';
 
 class SelectionSection extends StatelessWidget {
   @override
@@ -207,7 +207,7 @@ class _MiniInformationWidgetState extends State<MiniInformationWidget> {
                   type: ButtonType.PRIMARY,
                   text: "Start",
                   onPressed: () {
-                    log('Button clicked..');
+                    //log('Button clicked..');
                     _showDialog(context);
                     _toggle();
                     status = false;

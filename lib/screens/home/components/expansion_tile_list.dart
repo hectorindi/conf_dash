@@ -2,7 +2,7 @@ import 'package:admin/screens/forms/member_category_widget.dart';
 import 'package:admin/screens/forms/member_delegate_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'dart:developer';
+//import 'dart:developer';
 
 
 class CustomExpansionTileList extends StatefulWidget {
@@ -37,7 +37,7 @@ class _DrawerState extends State<CustomExpansionTileList> {
             ),
             onTap: () => {
               setState(() {
-                log("The item clicked is " + element['children'][i]['state']);
+                //log("The item clicked is " + element['children'][i]['state']);
 
                 //from the json we got which contains the menu and submenu we will need the "state"
                 // json item to get the unique identifier so we know what to open
@@ -99,16 +99,16 @@ class _DrawerState extends State<CustomExpansionTileList> {
               if (newState) {
                 Duration(seconds: 20000);
                 selected = index;
-                log(' selected ' + index.toString());
+                //log(' selected ' + index.toString());
               } else {
                 selected = -1;
-                log(' selected ' + selected.toString());
+                //log(' selected ' + selected.toString());
               }
             }),
           ),
         );
       } catch (err) {
-        log('Caught error: $err');
+        //log('Caught error: $err');
       }
     });
     return children;

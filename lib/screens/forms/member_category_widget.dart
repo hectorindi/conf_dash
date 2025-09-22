@@ -4,7 +4,7 @@ import 'package:admin/responsive.dart';
 import 'package:admin/screens/forms/components/add_member_category.dart';
 import 'package:admin/screens/forms/components/show_member_category.dart';
 import 'package:flutter/material.dart';
-import 'dart:developer';
+//import 'dart:developer';
 
 class MemberCategoryWidget extends StatefulWidget {
   @override
@@ -73,7 +73,7 @@ class _MemberCategoryWidgetState extends State<MemberCategoryWidget> {
                             return Center(child: CircularProgressIndicator());
                           } else {
                             final List<Map<String, dynamic>> memberData = snapshot.data as List<Map<String, dynamic>>;
-                            log("Member Data: $memberData");
+                            //log("Member Data: $memberData");
                             return ShowMemberCategory(memberData: memberData);
                           }
                         },

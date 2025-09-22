@@ -1,4 +1,4 @@
-import 'dart:developer';
+//import 'dart:developer';
 
 import 'package:admin/core/constants/color_constants.dart';
 import 'package:admin/core/utils/colorful_tag.dart';
@@ -52,7 +52,7 @@ class _AddMemberDelegateTypeState extends State<AddMemberDelegateType> {
   }
 
   void submitData() {
-    log("Adding DelegateType type : ${delegateTypeController.text} with status: $_selectedItem");
+    //log("Adding DelegateType type : ${delegateTypeController.text} with status: $_selectedItem");
     Map<String, dynamic> memberData = getmemeberID();
     double rate = double.parse(rateController.text);
     

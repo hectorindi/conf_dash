@@ -1,4 +1,4 @@
-import 'dart:developer';
+//import 'dart:developer';
 
 import 'package:admin/core/constants/color_constants.dart';
 import 'package:admin/core/utils/colorful_tag.dart';
@@ -24,7 +24,7 @@ class _AddMemberCategoryState extends State<AddMemberCategory> {
   bool _isEnabled = true;
 
   void submitData() {
-    log("Adding Member Category: ${categoryController.text} with status: $_selectedItem by user: ${categoryController.text}");
+    //log("Adding Member Category: ${categoryController.text} with status: $_selectedItem by user: ${categoryController.text}");
     memberService.value.addMemberCategoryToDatabase(
       categoryController.text,
       _selectedItem!,
