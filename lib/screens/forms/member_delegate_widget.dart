@@ -81,7 +81,18 @@ class _MemberDelegateWidgetState extends State<MemberDelegateWidget> {
                     ),
                     Visibility(
                       visible: _visible,
-                      child: AddMemberDelegateType(),
+                      child: FutureBuilder(
+                        future: memberService.value.getMemberDelegateTypeFromDatabase(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.waiting || snapshot.data == null) {
+                            return Center(child: CircularProgressIndicator());
+                          } else {
+                            final List<Map<String, dynamic>> memberData = snapshot.data as List<Map<String, dynamic>>;
+                            log("Member Data: $memberData");
+                            return AddMemberDelegateType(memberData: memberData);
+                          }
+                        },
+                      ),
                     ),
                     SizedBox(height: 24.0),
                   ],
