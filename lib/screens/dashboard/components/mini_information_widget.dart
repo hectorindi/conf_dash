@@ -1,170 +1,7 @@
 import 'package:admin/core/constants/color_constants.dart';
 import 'package:admin/models/daily_info_model.dart';
-
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-
-class MiniInformationWidget extends StatefulWidget {
-  const MiniInformationWidget({
-    Key? key,
-    required this.dailyData,
-  }) : super(key: key);
-  final TotalRegistrationInfoModel dailyData;
-
-  @override
-  _MiniInformationWidgetState createState() => _MiniInformationWidgetState();
-}
-
-int _value = 1;
-
-class _MiniInformationWidgetState extends State<MiniInformationWidget> {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(defaultPadding),
-      decoration: BoxDecoration(
-        color: secondaryColor,
-        borderRadius: const BorderRadius.all(Radius.circular(10)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                padding: EdgeInsets.all(defaultPadding * 0.75),
-                height: 40,
-                width: 40,
-                decoration: BoxDecoration(
-                  color: widget.dailyData.color!.withOpacity(0.1),
-                  borderRadius: const BorderRadius.all(Radius.circular(10)),
-                ),
-                child: Icon(
-                  widget.dailyData.icon,
-                  color: widget.dailyData.color,
-                  size: 18,
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(right: 12.0),
-                child: DropdownButton(
-                  icon: Icon(Icons.more_vert, size: 18),
-                  underline: SizedBox(),
-                  style: Theme.of(context).textTheme.labelMedium,
-                  value: _value,
-                  items: [
-                    DropdownMenuItem(
-                      child: Text("Daily"),
-                      value: 1,
-                    ),
-                    DropdownMenuItem(
-                      child: Text("Weekly"),
-                      value: 2,
-                    ),
-                    DropdownMenuItem(
-                      child: Text("Monthly"),
-                      value: 3,
-                    ),
-                  ],
-                  onChanged: (int? value) {
-                    setState(() {
-                      _value = value!;
-                    });
-                  },
-                ),
-              ),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                widget.dailyData.title!,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              SizedBox(
-                height: 8,
-              ),
-              Container(
-                child: LineChartWidget(
-                  colors: widget.dailyData.colors,
-                  spotsData: widget.dailyData.spots,
-                ),
-              )
-            ],
-          ),
-          SizedBox(
-            height: 8,
-          ),
-          ProgressLine(
-            color: widget.dailyData.color!,
-            percentage: widget.dailyData.percentage!,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                "${widget.dailyData.volumeData}",
-                style: Theme.of(context)
-                    .textTheme
-                    .headlineLarge!
-                    .copyWith(color: Colors.white70),
-              ),
-              Text(
-                widget.dailyData.totalStorage!,
-                style: Theme.of(context)
-                    .textTheme
-                    .headlineLarge!
-                    .copyWith(color: Colors.white),
-              ),
-            ],
-          )
-        ],
-      ),
-    );
-  }
-}
-
-class LineChartWidget extends StatelessWidget {
-  const LineChartWidget({
-    Key? key,
-    required this.colors,
-    required this.spotsData,
-  }) : super(key: key);
-  final List<Color>? colors;
-  final List<FlSpot>? spotsData;
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Container(
-          width: 80,
-          height: 30,
-          child: LineChart(
-            LineChartData(
-                lineBarsData: [
-                  LineChartBarData(
-                      spots: spotsData ?? [],
-                      belowBarData: BarAreaData(show: false),
-                      aboveBarData: BarAreaData(show: false),
-                      isCurved: true,
-                      dotData: FlDotData(show: false),
-                      barWidth: 3),
-                ],
-                lineTouchData: LineTouchData(enabled: false),
-                titlesData: FlTitlesData(show: false),
-                gridData: FlGridData(show: false),
-                borderData: FlBorderData(show: false)),
-          ),
-        ),
-      ],
-    );
-  }
-}
 
 class ProgressLine extends StatelessWidget {
   const ProgressLine({
@@ -199,6 +36,184 @@ class ProgressLine extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class LineChartWidget extends StatelessWidget {
+  const LineChartWidget({
+    Key? key,
+    required this.colors,
+    required this.spotsData,
+  }) : super(key: key);
+
+  final List<Color>? colors;
+  final List<FlSpot>? spotsData;
+
+  @override
+  Widget build(BuildContext context) {
+    return LineChart(
+      LineChartData(
+        gridData: FlGridData(show: false),
+        titlesData: FlTitlesData(show: false),
+        borderData: FlBorderData(show: false),
+        lineBarsData: [
+          LineChartBarData(
+            spots: spotsData ?? [],
+            isCurved: true,
+            gradient: LinearGradient(colors: colors ?? [Colors.blue]),
+            barWidth: 2,
+            isStrokeCapRound: true,
+            dotData: FlDotData(show: false),
+            belowBarData: BarAreaData(
+              show: true,
+              gradient: LinearGradient(
+                colors: (colors ?? [Colors.blue])
+                    .map((color) => color.withOpacity(0.3))
+                    .toList(),
+              ),
+            ),
+          ),
+        ],
+        lineTouchData: LineTouchData(enabled: false),
+        maxY: 4,
+        minY: 0,
+      ),
+    );
+  }
+}
+
+class MiniInformationWidget extends StatefulWidget {
+  const MiniInformationWidget({
+    Key? key,
+    required this.dailyData,
+  }) : super(key: key);
+  final TotalRegistrationInfoModel dailyData;
+
+  @override
+  _MiniInformationWidgetState createState() => _MiniInformationWidgetState();
+}
+
+// ...existing code...
+
+class _MiniInformationWidgetState extends State<MiniInformationWidget> {
+  String _selectedValue = "Daily";
+
+  @override
+  Widget build(BuildContext context) {
+    final isDesktop = MediaQuery.of(context).size.width >= 900;
+    
+    return Container(
+      constraints: BoxConstraints(
+        minHeight: 150,
+        maxHeight: isDesktop ? double.infinity : 180, // Add max height for mobile
+      ),
+      padding: EdgeInsets.all(defaultPadding),
+      decoration: BoxDecoration(
+        color: secondaryColor,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header row with icon and dropdown
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                padding: EdgeInsets.all(defaultPadding * 0.5), // Reduced padding
+                height: 35, // Reduced height
+                width: 35,  // Reduced width
+                decoration: BoxDecoration(
+                  color: widget.dailyData.color!.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(
+                  widget.dailyData.icon,
+                  color: widget.dailyData.color,
+                  size: 18, // Reduced icon size
+                ),
+              ),
+              DropdownButton<String>(
+                value: _selectedValue,
+                isDense: true, // Makes the dropdown more compact
+                underline: SizedBox(),
+                items: ["Daily", "Weekly", "Monthly"]
+                    .map((String value) => DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value, style: TextStyle(fontSize: 12)), // Smaller text
+                        ))
+                    .toList(),
+                onChanged: (String? newValue) {
+                  if (newValue != null) {
+                    setState(() => _selectedValue = newValue);
+                  }
+                },
+              ),
+            ],
+          ),
+          Spacer(flex: 1),
+          // Title and chart row
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Flexible(
+                flex: 2,
+                child: Text(
+                  widget.dailyData.title!,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.titleSmall, // Changed to titleSmall
+                ),
+              ),
+              Flexible(
+                child: SizedBox(
+                  height: 25, // Reduced height
+                  width: 60, // Reduced width
+                  child: LineChartWidget(
+                    colors: widget.dailyData.colors,
+                    spotsData: widget.dailyData.spots,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Spacer(flex: 1),
+          // Progress line
+          ProgressLine(
+            color: widget.dailyData.color!,
+            percentage: widget.dailyData.percentage!,
+          ),
+          Spacer(flex: 1),
+          // Bottom stats row
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Flexible(
+                child: Text(
+                  "${widget.dailyData.volumeData}",
+                  style: Theme.of(context).textTheme.bodySmall!.copyWith( // Changed to bodySmall
+                    color: Colors.white70,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              Flexible(
+                child: Text(
+                  widget.dailyData.totalStorage!,
+                  style: Theme.of(context).textTheme.bodySmall!.copyWith( // Changed to bodySmall
+                    color: Colors.white,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
