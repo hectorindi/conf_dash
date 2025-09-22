@@ -19,76 +19,152 @@ class _MemberCategoryWidgetState extends State<MemberCategoryWidget> {
       _visible = !_visible;
     });
   }
+
   @override
   Widget build(BuildContext context) {
+    final isMobile = Responsive.isMobile(context);
+    final isTablet = Responsive.isTablet(context);
+    
     return Scaffold(
-      appBar: new AppBar(),
+      appBar: AppBar(),
       body: SingleChildScrollView(
-        child: Card(
-          color: bgColor,
-          elevation: 5,
-          margin: EdgeInsets.fromLTRB(32, 32, 64, 32),
-          child: Padding(
-            padding: const EdgeInsets.all(32.0),
-            child: Container(
-                padding: const EdgeInsets.symmetric(
-                    vertical: 16.0, horizontal: 16.0),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Center(
-                          child: Text("Member Category", style: Theme.of(context)
-                            .textTheme
-                            .headlineLarge!
-                            .copyWith(color: Colors.white)),
-                        ),
-                        Spacer(),
-                        ElevatedButton.icon(
-                          style: TextButton.styleFrom(
-                            backgroundColor: Colors.green,
-                            padding: EdgeInsets.symmetric(
-                              horizontal: defaultPadding * 1.5,
-                              vertical:
-                                  defaultPadding / (Responsive.isMobile(context) ? 2 : 1),
+        child: Container(
+          width: double.infinity,
+          margin: EdgeInsets.fromLTRB(
+            isMobile ? 16 : (isTablet ? 24 : 32),
+            isMobile ? 16 : (isTablet ? 24 : 32),
+            isMobile ? 16 : (isTablet ? 32 : 64),
+            isMobile ? 16 : (isTablet ? 24 : 32),
+          ),
+          child: Card(
+            color: bgColor,
+            elevation: 5,
+            child: Padding(
+              padding: EdgeInsets.all(
+                isMobile ? 16.0 : (isTablet ? 24.0 : 32.0),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Header Section - Responsive Layout
+                  if (isMobile)
+                    _buildMobileHeader(context)
+                  else
+                    _buildDesktopHeader(context),
+                  
+                  SizedBox(height: isMobile ? 16 : 24),
+                  
+                  // Content Section
+                  Visibility(
+                    visible: !_visible,
+                    child: FutureBuilder(
+                      future: memberService.value.getMemberCategoryFromDatabase(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting || 
+                            snapshot.data == null) {
+                          return Container(
+                            height: 200,
+                            child: Center(
+                              child: CircularProgressIndicator(),
                             ),
-                          ),
-                          onPressed: () {
-                            _toggle();
-                          },
-                          icon: Icon(Icons.add),
-                          label: Text(
-                            "Add New",
-                          ),
-                        ),
-                      ],
+                          );
+                        } else {
+                          final List<Map<String, dynamic>> memberData = 
+                              snapshot.data as List<Map<String, dynamic>>;
+                          return ShowMemberCategory(memberData: memberData);
+                        }
+                      },
                     ),
-                    SizedBox(height: 24),
-                    Visibility(
-                      visible: !_visible,
-                      child: FutureBuilder(
-                        future: memberService.value.getMemberCategoryFromDatabase(),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState == ConnectionState.waiting || snapshot.data == null) {
-                            return Center(child: CircularProgressIndicator());
-                          } else {
-                            final List<Map<String, dynamic>> memberData = snapshot.data as List<Map<String, dynamic>>;
-                            //log("Member Data: $memberData");
-                            return ShowMemberCategory(memberData: memberData);
-                          }
-                        },
-                      ),
-                    ),
-                    Visibility(
-                      visible: _visible,
-                      child: AddMemberCategory(),
-                    ),
-                    SizedBox(height: 24.0),
-                  ],
-                )),
+                  ),
+                  
+                  Visibility(
+                    visible: _visible,
+                    child: AddMemberCategory(),
+                  ),
+                  
+                  SizedBox(height: isMobile ? 16 : 24),
+                ],
+              ),
+            ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildMobileHeader(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "Member Category",
+          style: Theme.of(context).textTheme.headlineSmall!.copyWith(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        SizedBox(height: 16),
+        SizedBox(
+          width: double.infinity,
+          child: ElevatedButton.icon(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green,
+              foregroundColor: Colors.white,
+              padding: EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 12,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            onPressed: () {
+              _toggle();
+            },
+            icon: Icon(Icons.add, size: 20),
+            label: Text(
+              _visible ? "Back to List" : "Add New Category",
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDesktopHeader(BuildContext context) {
+    return Row(
+      children: [
+        Text(
+          "Member Category",
+          style: Theme.of(context).textTheme.headlineLarge!.copyWith(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        Spacer(),
+        ElevatedButton.icon(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.green,
+            foregroundColor: Colors.white,
+            padding: EdgeInsets.symmetric(
+              horizontal: defaultPadding * 1.5,
+              vertical: defaultPadding / (Responsive.isTablet(context) ? 1.5 : 1),
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+          onPressed: () {
+            _toggle();
+          },
+          icon: Icon(Icons.add),
+          label: Text(
+            _visible ? "Back to List" : "Add New",
+            style: TextStyle(fontWeight: FontWeight.w600),
+          ),
+        ),
+      ],
     );
   }
 }
