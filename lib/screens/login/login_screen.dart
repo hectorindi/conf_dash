@@ -44,13 +44,16 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
   }
 
   void _onLoginPressed() {
-    setState(() {
-      _isEnabled = false;
-    });
-    authService.value.signIn(
+  setState(() {
+    _isEnabled = false;
+  });
+  
+  try {
+    // Replace direct auth service call with Future
+    Future(() => authService.value.signIn(
       emailController.text,
       passwordController.text,
-    ).then((userCredential) {
+    )).then((userCredential) {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => HomeScreen()),
@@ -60,10 +63,24 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
         _isEnabled = true;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(error.toString())),
+        SnackBar(
+          content: Text(error.toString()),
+          backgroundColor: Colors.red,
+        ),
       );
     });
+  } catch (e) {
+    setState(() {
+      _isEnabled = true;
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('An unexpected error occurred'),
+        backgroundColor: Colors.red,
+      ),
+    );
   }
+}
 
 @override
 Widget build(BuildContext context) {
