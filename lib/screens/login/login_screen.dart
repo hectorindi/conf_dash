@@ -1,6 +1,7 @@
 import 'package:admin/core/constants/color_constants.dart';
 import 'package:admin/core/widgets/app_button_widget.dart';
 import 'package:admin/core/widgets/input_widget.dart';
+import 'package:admin/models/LoginObject.dart';
 import 'package:admin/screens/home/home_screen.dart';
 import 'package:admin/screens/login/components/slider_widget.dart';
 import 'package:admin/data/login_service.dart';
@@ -44,49 +45,44 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
     super.dispose();
   }
 
-void _onLoginPressed() {
-  if (!_isEnabled) return;
+void _onLoginPressed() async {
+  try {
+    if (!_isEnabled) return;
   
-  setState(() {
-    _isEnabled = false;
-  });
+    setState(() {
+      _isEnabled = false;
+    });
 
-  Future(() => authService.value.signIn(
-    emailController.text,
-    passwordController.text,
-  ))
-  .then((success) {
-    //log("User credetials are $success");
-    if(success == true) {
+    final LoginObject loginResult = await authService.value.signIn(
+      emailController.text,
+      passwordController.text,
+    );
+
+    if (loginResult.successful) {
+      // Access LoginObject properties
+      print('Welcome ${loginResult.uid}');
+            
+      // Navigate to next screen
+      //Navigator.pushReplacementNamed(context, '/home');
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => HomeScreen()),
       );
     } else {
+      // Handle login failure
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Login Failed"),
-          backgroundColor: Colors.red,
-        ),
+        SnackBar(content: Text(loginResult.error ?? 'Login failed')),
       );
     }
-  })
-  .catchError((error) {
-    //log("User credetials are $error");
+  } catch (error) {
+    setState(() => _isEnabled = true);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(error.toString()),
         backgroundColor: Colors.red,
       ),
     );
-  })
-  .whenComplete(() {
-    if (mounted) {
-      setState(() {
-        _isEnabled = true;
-      });
-    }
-  });
+  }
 }
 
 @override

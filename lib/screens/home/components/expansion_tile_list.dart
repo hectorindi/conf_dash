@@ -4,11 +4,12 @@ import 'package:admin/screens/forms/member_delegate_widget.dart';
 import 'package:admin/screens/login/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-
+import 'package:admin/data/login_service.dart';
 class CustomExpansionTileList extends StatefulWidget {
-  const CustomExpansionTileList({Key? key, required this.elementList});
+  const CustomExpansionTileList({Key? key, required this.elementList, required this.isSidebar});
   
   final List<dynamic> elementList; 
+  final bool isSidebar;
   
   @override
   State<StatefulWidget> createState() => _DrawerState();
@@ -16,9 +17,12 @@ class CustomExpansionTileList extends StatefulWidget {
 
 class _DrawerState extends State<CustomExpansionTileList> {
   int _selectedPageIndex = 0;
+  bool _isEnabled = true;
+  String _defaultText = "logout";
   PageController _pageController = PageController();
   
   List<Widget> _getChildren(final List<dynamic> elementList) {
+    
     List<Widget> children = [];
     elementList.toList().asMap().forEach((index, element) {
       int selected = 0;
@@ -31,6 +35,8 @@ class _DrawerState extends State<CustomExpansionTileList> {
               color: Colors.transparent,
               child: InkWell(
                 onTap: () {
+                  if (widget.isSidebar)
+                    _defaultText = element['children'][i]['title'];
                   setState(() {
                     switch (element['children'][i]['state']) {
                       case '/member_category':
@@ -65,18 +71,7 @@ class _DrawerState extends State<CustomExpansionTileList> {
                         break;
                       case '/Logout':
                         _selectedPageIndex = 2;
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          if (_pageController.hasClients) {
-                            _pageController.animateToPage(1, 
-                              duration: Duration(milliseconds: 1), 
-                              curve: Curves.easeInOut);
-                          }
-                        });
-                        Navigator.of(context).push(MaterialPageRoute<Null>(
-                          builder: (BuildContext context) {
-                            return Login(title: "Welcome to the Admin & Dashboard Panel");
-                          },
-                          fullscreenDialog: true));
+                        _onLogOutPressed();
                         break;
                     }
                   });
@@ -84,13 +79,13 @@ class _DrawerState extends State<CustomExpansionTileList> {
                 child: Container(
                   width: double.infinity,
                   padding: EdgeInsets.only(
-                    left: Responsive.isMobile(context) ? 40.0 : 50.0, // Indent for hierarchy
-                    right: 16.0,
+                    left: Responsive.isMobile(context) ? 30.0 : 50.0, // Indent for hierarchy
+                    right: Responsive.isMobile(context) ? 0.0 : 16.0,
                     top: 6.0,    // Minimal vertical padding
                     bottom: 6.0,
                   ),
                   child: Text(
-                    element['children'][i]['title'],
+                    !Responsive.isMobile(context) ? element['children'][i]['title'] : _defaultText,
                     style: TextStyle(
                       color: Colors.white54,
                       fontSize: Responsive.isMobile(context) ? 13.0 : 14.0,
@@ -161,6 +156,49 @@ class _DrawerState extends State<CustomExpansionTileList> {
       }
     });
     return children;
+  }
+
+  void _onLogOutPressed() {
+      if (!_isEnabled) return;
+      
+      setState(() {
+        _isEnabled = false;
+      });
+
+      Future(() => authService.value.signOut())
+      .then((success) {
+        //log("User credetials are $success");
+        if(success == true) {
+          Navigator.of(context).push(MaterialPageRoute<Null>(
+                builder: (BuildContext context) {
+                return Login(title: "Welcome to the Admin & Dashboard Panel");
+          },
+          fullscreenDialog: true));
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("Login Failed"),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      })
+      .catchError((error) {
+        //log("User credetials are $error");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(error.toString()),
+            backgroundColor: Colors.red,
+          ),
+        );
+      })
+      .whenComplete(() {
+        if (mounted) {
+          setState(() {
+            _isEnabled = true;
+          });
+        }
+      });
   }
 
   @override

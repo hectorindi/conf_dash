@@ -82,6 +82,7 @@ class SideMenu extends StatelessWidget {
                   ]
                 }
               ],
+              isSidebar: true
             ),
             DrawerListTile(
               title: "Posts",

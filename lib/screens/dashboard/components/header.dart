@@ -38,11 +38,11 @@ class Header extends StatelessWidget {
               ),
             ],
           ),
-        if (!Responsive.isMobile(context))
+        if (!Responsive.isMobile(context)) 
           Spacer(flex: Responsive.isDesktop(context) ? 2 : 1),
         Expanded(child: SearchField()),
         Expanded(child: SizedBox(
-          height: Responsive.isDesktop(context) ? 50 : 150,
+          height: Responsive.isDesktop(context) ? 100 : 150,
           child: ProfileCard()
         ))
       ],
@@ -89,6 +89,7 @@ class ProfileCard extends StatelessWidget {
                   ]
                 }
               ],
+              isSidebar: false,
             ),
           ),
         ],
