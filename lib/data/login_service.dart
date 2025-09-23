@@ -43,7 +43,7 @@ class AuthService {
     return true;
   }
 
-  Future<LoginObject?> signUp(MemberObject member , String email, String password) async {
+  Future<LoginObject> signUp(MemberObject member , String email, String password) async {
     final bool isValid = checkRequiredFields(member, email, password);
     if (!isValid) {
       return LoginObject(name: email, successful: false, uid: null, error: errorText);

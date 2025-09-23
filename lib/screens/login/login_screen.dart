@@ -2,6 +2,8 @@ import 'package:admin/core/constants/color_constants.dart';
 import 'package:admin/core/widgets/app_button_widget.dart';
 import 'package:admin/core/widgets/input_widget.dart';
 import 'package:admin/models/LoginObject.dart';
+import 'package:admin/models/member_object.dart';
+import 'package:admin/screens/home/components/speciality_register_widget.dart';
 import 'package:admin/screens/home/home_screen.dart';
 import 'package:admin/screens/login/components/slider_widget.dart';
 import 'package:admin/data/login_service.dart';
@@ -21,6 +23,8 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
       .chain(CurveTween(curve: Curves.ease));
   var tweenRight = Tween<Offset>(begin: Offset(0, 0), end: Offset(2, 0))
       .chain(CurveTween(curve: Curves.ease));
+
+  var _specialityStr = "";
       
   AnimationController? _animationController;
   bool _isMoved = false;
@@ -29,6 +33,14 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
 
   TextEditingController passwordController = TextEditingController();
   TextEditingController emailController = TextEditingController();
+  TextEditingController nameController = TextEditingController();
+  TextEditingController addressController = TextEditingController();
+  TextEditingController phoneController = TextEditingController();
+
+  void updateSpeciality(String value) => setState( () {
+    _specialityStr = value;
+    print("Speciality updated to $_specialityStr");
+  });
 
   @override
   void initState() {
@@ -72,6 +84,58 @@ void _onLoginPressed() async {
       // Handle login failure
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(loginResult.error ?? 'Login failed')),
+      );
+    }
+  } catch (error) {
+    setState(() => _isEnabled = true);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(error.toString()),
+        backgroundColor: Colors.red,
+      ),
+    );
+  }
+}
+
+void _onRegisterPressed() async {
+  try {
+    if (!_isEnabled) return;
+  
+    setState(() {
+      _isEnabled = false;
+    });
+
+    MemberObject member = MemberObject(
+        uid: "",
+        name: nameController.text,
+        isAdmin: false,
+        address: addressController.text,
+        accessToken:"",
+        email: emailController.text,
+        phoneNumber: phoneController.text,
+        createdAt: DateTime.now().toString(),
+        specialization: _specialityStr,
+    );
+
+    final LoginObject loginResult = await authService.value.signUp(member, emailController.text, passwordController.text);
+
+    if (loginResult.successful) {
+      // Access LoginObject properties
+      print('Welcome ${loginResult.uid}');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Registered')),
+      );
+            
+      // Navigate to next screen
+      //Navigator.pushReplacementNamed(context, '/home');
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomeScreen()),
+      );
+    } else {
+      // Handle login failure
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(loginResult.error ?? 'Register failed')),
       );
     }
   } catch (error) {
@@ -184,48 +248,60 @@ Widget build(BuildContext context) {
         children: [
           InputWidget(
             keyboardType: TextInputType.emailAddress,
+            kController: nameController,
             onSaved: (String? value) {},
             onChanged: (String? value) {},
-            validator: (String? value) {
-              return (value != null && value.contains('@'))
-                  ? 'Do not use the @ char.'
-                  : null;
-            },
+            validator: null,
             topLabel: "Name",
             hintText: "Enter Name",
           ),
           SizedBox(height: 8.0),
           InputWidget(
             keyboardType: TextInputType.emailAddress,
+            kController: emailController,
             onSaved: (String? value) {},
             onChanged: (String? value) {},
-            validator: (String? value) {
-              return (value != null && value.contains('@'))
-                  ? 'Do not use the @ char.'
-                  : null;
-            },
+            validator: null,
             topLabel: "Email",
             hintText: "Enter E-mail",
           ),
           SizedBox(height: 8.0),
           InputWidget(
+            keyboardType: TextInputType.phone,
+            kController: phoneController,
+            onSaved: (String? value) {},
+            onChanged: (String? value) {},
+            validator: null,
+            topLabel: "Number",
+            hintText: "Number",
+          ),
+          SizedBox(height: 8.0),
+          InputWidget(
             topLabel: "Password",
+            kController: passwordController,
             obscureText: true,
             hintText: "Enter Password",
             onSaved: (String? uPassword) {},
             onChanged: (String? value) {},
             validator: (String? value) {},
           ),
+          SizedBox(height: 8.0),
+          InputWidget(
+            topLabel: "Address",
+            kController: addressController,
+            obscureText: false,
+            hintText: "Address",
+            onSaved: (String? uPassword) {},
+            onChanged: (String? value) {},
+            validator: (String? value) {},
+          ),
+          SizedBox(height: 18.0),
+          RegisterSpecialityWidget(callback: updateSpeciality),
           SizedBox(height: 24.0),
           AppButton(
             type: ButtonType.PRIMARY,
             text: "Sign Up",
-            onPressed: () {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => HomeScreen()),
-              );
-            },
+            onPressed: _onRegisterPressed
           ),
           SizedBox(height: 24.0),
           Row(
