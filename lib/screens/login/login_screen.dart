@@ -5,6 +5,7 @@ import 'package:admin/screens/home/home_screen.dart';
 import 'package:admin/screens/login/components/slider_widget.dart';
 import 'package:admin/data/login_service.dart';
 import 'package:flutter/material.dart';
+import 'dart:developer';
 
 class Login extends StatefulWidget {
   const Login({Key? key, required this.title}) : super(key: key);
@@ -54,13 +55,24 @@ void _onLoginPressed() {
     emailController.text,
     passwordController.text,
   ))
-  .then((userCredential) {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => HomeScreen()),
-    );
+  .then((success) {
+    //log("User credetials are $success");
+    if(success == true) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomeScreen()),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Login Failed"),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   })
   .catchError((error) {
+    //log("User credetials are $error");
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(error.toString()),

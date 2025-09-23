@@ -2,6 +2,7 @@ import 'package:admin/core/constants/color_constants.dart';
 import 'package:admin/responsive.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:admin/screens/home/components/expansion_tile_list.dart';
 
 class Header extends StatelessWidget {
   const Header({
@@ -40,7 +41,10 @@ class Header extends StatelessWidget {
         if (!Responsive.isMobile(context))
           Spacer(flex: Responsive.isDesktop(context) ? 2 : 1),
         Expanded(child: SearchField()),
-        ProfileCard()
+        Expanded(child: SizedBox(
+          height: Responsive.isDesktop(context) ? 50 : 150,
+          child: ProfileCard()
+        ))
       ],
     );
   }
@@ -69,13 +73,24 @@ class ProfileCard extends StatelessWidget {
           CircleAvatar(
             backgroundImage: AssetImage("assets/images/profile_pic.png"),
           ),
-          if (!Responsive.isMobile(context))
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: defaultPadding / 2),
-              child: Text("Deniz Çolak"),
+          Expanded(
+            child: CustomExpansionTileList(
+              elementList: [
+                {
+                  "title": "Deniz Colak",
+                  "icon": "assets/icons/menu_dashboard.svg",
+                  "state": "/Logout",
+                  "children": [
+                    {
+                      "title": "Logout",
+                      "icon": "assets/icons/menu_dashboard.svg",
+                      "state": "/Logout"
+                    }
+                  ]
+                }
+              ],
             ),
-          Icon(Icons.keyboard_arrow_down),
+          ),
         ],
       ),
     );
