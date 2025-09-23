@@ -69,6 +69,21 @@ class _DrawerState extends State<CustomExpansionTileList> {
                           },
                           fullscreenDialog: true));
                         break;
+                      case '/delegate_category':
+                        _selectedPageIndex = 3;
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          if (_pageController.hasClients) {
+                            _pageController.animateToPage(1, 
+                              duration: Duration(milliseconds: 1), 
+                              curve: Curves.easeInOut);
+                          }
+                        });
+                        Navigator.of(context).push(MaterialPageRoute<Null>(
+                          builder: (BuildContext context) {
+                            return MemberDelegateWidget();
+                          },
+                          fullscreenDialog: true));
+                        break;
                       case '/Logout':
                         _selectedPageIndex = 2;
                         _onLogOutPressed();

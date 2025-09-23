@@ -3,6 +3,7 @@ const eventCollection = "aios_0925";
 class AppConstants {
   static String eventCollectionName  = "aios_0925";
   static String memberCategoryDocName  = "member_category";
+  static String memberRegistrationLatestID  = "latestID";
   static String delegateCatTypeDocName  = "delegate_category";
   static String sessionHallDocName  = "session_hall";
   static String sessionRoleDocName  = "session_role";

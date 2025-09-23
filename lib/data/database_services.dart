@@ -73,6 +73,18 @@ class DatabaseServices {
     }
   }
 
+  Future<bool?> getLasteMemeberRegID() async {
+    try {
+      CollectionReference ref = _firestore.collection(AppConstants.memberRegistrationLatestID);
+
+
+      return true;
+    } catch (e) {
+      //log('Error adding member category: $e');
+      return false;
+    }
+  }
+
   Future<bool?> addMemberCategoryToDatabase(String category,String status) async {
     try {
       CollectionReference ref = _firestore.collection(AppConstants.eventCollectionName);
@@ -110,7 +122,7 @@ class DatabaseServices {
 
   Future<List <Map<String, dynamic>>> getMemberCategoryFromDatabase() async {
     try {
-      CollectionReference ref = _firestore.collection('aios_0925').doc("member_category").collection("mem_ct");
+      CollectionReference ref = _firestore.collection(AppConstants.eventCollectionName).doc(AppConstants.memberCategoryDocName).collection("mem_ct");
       //log("Fetching Member Category");
       QuerySnapshot querySnapshot = await ref.get();
       if (querySnapshot.docs.isNotEmpty) {

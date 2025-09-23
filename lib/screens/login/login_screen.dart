@@ -1,7 +1,7 @@
 import 'package:admin/core/constants/color_constants.dart';
 import 'package:admin/core/widgets/app_button_widget.dart';
 import 'package:admin/core/widgets/input_widget.dart';
-import 'package:admin/models/LoginObject.dart';
+import 'package:admin/models/login_object.dart';
 import 'package:admin/models/member_object.dart';
 import 'package:admin/screens/home/components/speciality_register_widget.dart';
 import 'package:admin/screens/home/home_screen.dart';
@@ -123,15 +123,16 @@ void _onRegisterPressed() async {
       // Access LoginObject properties
       print('Welcome ${loginResult.uid}');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Registered')),
+        SnackBar(
+          content: Text('Registered'),
+          backgroundColor: Colors.green),
       );
-            
-      // Navigate to next screen
-      //Navigator.pushReplacementNamed(context, '/home');
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => HomeScreen()),
-      );
+      Future.delayed( Duration(seconds: 1), () {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomeScreen()),
+        );
+      });
     } else {
       // Handle login failure
       ScaffoldMessenger.of(context).showSnackBar(

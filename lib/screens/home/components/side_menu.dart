@@ -1,4 +1,5 @@
 import 'package:admin/core/constants/color_constants.dart';
+import 'package:admin/screens/forms/event_registration_widget.dart';
 import 'package:admin/screens/home/components/expansion_tile_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -48,36 +49,6 @@ class SideMenu extends StatelessWidget {
                       "title": "Delegate Category",
                       "icon": "assets/icons/menu_dashboard.svg",
                       "state": "/delegate_category"
-                    },
-                    {
-                      "title": "Abstract Category",
-                      "icon": "assets/icons/menu_dashboard.svg",
-                      "state": "/abstract_category"
-                    },
-                    {
-                      "title": "Abstract Type",
-                      "icon": "assets/icons/menu_dashboard.svg",
-                      "state": "/abstract_type"
-                    },
-                    {
-                      "title": "Session Halls",
-                      "icon": "assets/icons/menu_dashboard.svg",
-                      "state": "/session_halls"
-                    },
-                    {
-                      "title": "Session date",
-                      "icon": "assets/icons/menu_dashboard.svg",
-                      "state": "/session_date"
-                    },
-                    {
-                      "title": "Session Time",
-                      "icon": "assets/icons/menu_dashboard.svg",
-                      "state": "/session_time"
-                    },
-                    {
-                      "title": "Session Role",
-                      "icon": "assets/icons/menu_dashboard.svg",
-                      "state": "/session_role"
                     }
                   ]
                 }
@@ -87,37 +58,13 @@ class SideMenu extends StatelessWidget {
             DrawerListTile(
               title: "Posts",
               svgSrc: "assets/icons/menu_tran.svg",
-              press: () {},
-            ),
-            DrawerListTile(
-              title: "Pages",
-              svgSrc: "assets/icons/menu_task.svg",
-              press: () {},
-            ),
-            DrawerListTile(
-              title: "Categories",
-              svgSrc: "assets/icons/menu_doc.svg",
-              press: () {},
-            ),
-            DrawerListTile(
-              title: "Appearance",
-              svgSrc: "assets/icons/menu_store.svg",
-              press: () {},
-            ),
-            DrawerListTile(
-              title: "Users",
-              svgSrc: "assets/icons/menu_notification.svg",
-              press: () {},
-            ),
-            DrawerListTile(
-              title: "Tools",
-              svgSrc: "assets/icons/menu_profile.svg",
-              press: () {},
-            ),
-            DrawerListTile(
-              title: "Settings",
-              svgSrc: "assets/icons/menu_setting.svg",
-              press: () {},
+              press: () {
+                Navigator.of(context).push(MaterialPageRoute<Null>(
+                  builder: (BuildContext context) {
+                    return EventRegistrationWidget(title: "Event Registration");
+                  },
+                fullscreenDialog: true));
+              },
             ),
           ],
         ),

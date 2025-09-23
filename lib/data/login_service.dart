@@ -1,4 +1,4 @@
-import 'package:admin/models/LoginObject.dart';
+import 'package:admin/models/login_object.dart';
 import 'package:admin/models/member_object.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
