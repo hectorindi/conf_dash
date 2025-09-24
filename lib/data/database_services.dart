@@ -104,10 +104,10 @@ class DatabaseServices {
   Future<bool?> addDelegateTypeToDatabase(String type,String status,double rate, String uid) async {
     try {
       CollectionReference ref = _firestore.collection(AppConstants.eventCollectionName);
-       DocumentReference userRef = _firestore.collection('users').doc(uid);
+      DocumentReference userRef = await ref.doc(AppConstants.memberCategoryDocName).collection(AppConstants.memberCategoryColName).doc(uid);
       //log("Adding delegate type : $type with status: $status by user: $type");
-      await ref.doc(AppConstants.delegateCatTypeDocName).collection(AppConstants.delegateCatTypeColName).add({
-        'delegate_type': type,
+      await ref.doc(AppConstants.memberRegistedDocName).collection(AppConstants.memberRegisteredColName).add({
+        'address': type,
         'category': userRef,
         'status': status,
         'rate': rate,
@@ -130,6 +130,36 @@ class DatabaseServices {
         querySnapshot.docs.forEach((doc) {
           Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
           data['uid'] = doc.id;
+          finalData.add(data);
+          //log("Member Category: ${data['category']}, Status: ${data['status']}");
+        });
+        return finalData;
+        //return querySnapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+      }
+    } catch (e) {
+      //log('Error fetching member category: $e');
+      return [{errorText: e.toString()}];
+    }
+    return [{errorText: "Something went wrong"}];
+  }
+
+  Future<List <Map<String, dynamic>>> getRegisteredMemebersFromDatabase() async {
+    try {
+      CollectionReference ref = _firestore.collection(AppConstants.eventCollectionName).doc(AppConstants.memberRegistedDocName).collection(AppConstants.memberRegisteredColName);
+      List<Map<String, dynamic>> memberCategory = await getMemberCategoryFromDatabase();
+      //log("Fetching Member Category");
+      QuerySnapshot querySnapshot = await ref.get();
+      if (querySnapshot.docs.isNotEmpty) {
+        List<Map<String, dynamic>> finalData = [];
+        querySnapshot.docs.forEach((doc) {
+          Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+          data['uid'] = doc.id;
+          memberCategory.forEach((action){
+              if (action['uid'] == data['memberType'].id) {
+                data['memberCategory'] = action['category'];
+              }
+            }
+          );
           finalData.add(data);
           //log("Member Category: ${data['category']}, Status: ${data['status']}");
         });
@@ -174,6 +204,5 @@ class DatabaseServices {
       //log('Error fetching member delegate type: $e');
       return [{errorText: e.toString()}];
     }
-    return [{"error": "Something went wrong"}];
   }
 }

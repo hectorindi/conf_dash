@@ -16,6 +16,8 @@ class ShowMemberRegistration extends StatefulWidget {
 }
 
 class _ShowMemberRegistrationState extends State<ShowMemberRegistration> {
+  // ...existing code...
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -30,7 +32,6 @@ class _ShowMemberRegistrationState extends State<ShowMemberRegistration> {
           // Mobile Layout
           if (Responsive.isMobile(context))
             ...widget.memberData.map((data) => _buildMobileCard(data)).toList()
-          
           // Desktop/Tablet Layout
           else
             SingleChildScrollView(
@@ -43,16 +44,18 @@ class _ShowMemberRegistrationState extends State<ShowMemberRegistration> {
                   horizontalMargin: 0,
                   columnSpacing: defaultPadding,
                   columns: [
-                    DataColumn(label: Text("RegID")),
                     DataColumn(label: Text("Name")),
-                    DataColumn(label: Text("email/mobile")),
-                    DataColumn(label: Text("Memeber Type")),
-                    DataColumn(label: Text("payment")),
-                    DataColumn(label: Text("Amount")),
+                    DataColumn(label: Text("Email")),
+                    DataColumn(label: Text("Phone")),
+                    DataColumn(label: Text("Address")),
+                    DataColumn(label: Text("Member Type")),
+                    DataColumn(label: Text("Specialization")),
+                    DataColumn(label: Text("Created At")),
+                    DataColumn(label: Text("Status")),
+                    DataColumn(label: Text("Is Admin")),
+                    DataColumn(label: Text("Actions")),
                   ],
-                  rows: widget.memberData
-                      .map((data) => _buildDataRow(data))
-                      .toList(),
+                  rows: widget.memberData.map((data) => _buildDataRow(data)).toList(),
                 ),
               ),
             ),
@@ -180,32 +183,78 @@ class _ShowMemberRegistrationState extends State<ShowMemberRegistration> {
     );
   }
 
-  DataRow _buildDataRow(Map<String, dynamic> memberCategory) {
+  DataRow _buildDataRow(Map<String, dynamic> data) {
     return DataRow(
       cells: [
+        DataCell(Text(data['name'] ?? 'N/A')),
+        DataCell(Text
+          ((data['emailMobile'] != null) ? (data['emailMobile'].toString().split("/")[0]) : 'N/A')
+        ),
+        DataCell(Text
+          ((data['emailMobile'] != null) ? (data['emailMobile'].toString().split("/")[1]) : 'N/A')
+        ),
+        DataCell(Text(data['address'] ?? 'N/A')),
         DataCell(
           Container(
             padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
-              color: Colors.red,
-              border: Border.all(color: Colors.red),
+              color: Colors.blue.withOpacity(0.2),
+              border: Border.all(color: const Color.fromARGB(255, 223, 98, 14)),
               borderRadius: BorderRadius.circular(4),
             ),
             child: Text(
-              memberCategory['category'] ?? 'N/A',
-              style: TextStyle(color: Colors.white),
+              data['memberCategory'] ?? 'N/A',
+              style: TextStyle(fontSize: 11),
             ),
           ),
         ),
-        DataCell(Text(memberCategory['status'] ?? 'N/A')),
         DataCell(
           Container(
-            width: 150,
-            child: Text(
-              _formatTimestamp(memberCategory['createdAt']),
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: 12),
+            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            decoration: BoxDecoration(
+              color: Colors.blue.withOpacity(0.2),
+              border: Border.all(color: Colors.blue),
+              borderRadius: BorderRadius.circular(4),
             ),
+            child: Text(
+              data['specialization'] ?? 'N/A',
+              style: TextStyle(fontSize: 11),
+            ),
+          ),
+        ),
+        DataCell(Text(_formatTimestamp(data['createdAt']))),
+        DataCell(
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            decoration: BoxDecoration(
+              color: (data['status'] == 'active' ? Colors.green : Colors.orange).withOpacity(0.2),
+              border: Border.all(
+                color: data['status'] == 'active' ? Colors.green : Colors.orange
+              ),
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: Text(
+              (data['status'] ?? 'N/A').toUpperCase(),
+              style: TextStyle(fontSize: 11),
+            ),
+          ),
+        ),
+        DataCell(Text(data['isAdmin'] == true ? 'Yes' : 'No')),
+        DataCell(
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                iconSize: 20,
+                icon: Icon(Icons.edit, color: Colors.blue),
+                onPressed: () {},
+              ),
+              IconButton(
+                iconSize: 20,
+                icon: Icon(Icons.delete, color: Colors.red),
+                onPressed: () {},
+              ),
+            ],
           ),
         ),
       ],

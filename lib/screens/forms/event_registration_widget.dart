@@ -66,7 +66,7 @@ class _EventRegistrationWidgetState extends State<EventRegistrationWidget> {
                   Visibility(
                     visible: !_visible,
                     child: FutureBuilder(
-                      future: memberService.value.getMemberCategoryFromDatabase(),
+                      future: memberService.value.getRegisteredMemebersFromDatabase(),
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.waiting || 
                             snapshot.data == null) {

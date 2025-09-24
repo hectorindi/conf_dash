@@ -56,7 +56,7 @@ class SideMenu extends StatelessWidget {
               isSidebar: true
             ),
             DrawerListTile(
-              title: "Posts",
+              title: "Members",
               svgSrc: "assets/icons/menu_tran.svg",
               press: () {
                 Navigator.of(context).push(MaterialPageRoute<Null>(
