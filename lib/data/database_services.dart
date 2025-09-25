@@ -143,10 +143,34 @@ class DatabaseServices {
     return [{errorText: "Something went wrong"}];
   }
 
+  Future<List <Map<String, dynamic>>> getSpecializationFromDatabase() async {
+    try {
+      CollectionReference ref = _firestore.collection(AppConstants.eventCollectionName).doc(AppConstants.courseDocName).collection(AppConstants.courseColName);
+      //log("Fetching Member Category");
+      QuerySnapshot querySnapshot = await ref.get();
+      if (querySnapshot.docs.isNotEmpty) {
+        List<Map<String, dynamic>> finalData = [];
+        querySnapshot.docs.forEach((doc) {
+          Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+          data['uid'] = doc.id;
+          finalData.add(data);
+          //log("Member Category: ${data['category']}, Status: ${data['status']}");
+        });
+        return finalData;
+        //return querySnapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+      }
+    } catch (e) {
+      //log('Error fetching member category: $e');
+      return [{errorText: e.toString()}];
+    }
+    return [{errorText: "Something went wrong"}];
+  }
+
   Future<List <Map<String, dynamic>>> getRegisteredMemebersFromDatabase() async {
     try {
       CollectionReference ref = _firestore.collection(AppConstants.eventCollectionName).doc(AppConstants.memberRegistedDocName).collection(AppConstants.memberRegisteredColName);
       List<Map<String, dynamic>> memberCategory = await getMemberCategoryFromDatabase();
+      List<Map<String, dynamic>> specialization = await getSpecializationFromDatabase();
       //log("Fetching Member Category");
       QuerySnapshot querySnapshot = await ref.get();
       if (querySnapshot.docs.isNotEmpty) {
@@ -155,11 +179,15 @@ class DatabaseServices {
           Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
           data['uid'] = doc.id;
           memberCategory.forEach((action){
-              if (action['uid'] == data['memberType'].id) {
-                data['memberCategory'] = action['category'];
-              }
+            if (action['uid'] == data['memberType'].id) {
+              data['memberCategory'] = action['category'];
             }
-          );
+          });
+          specialization.forEach((action){
+            if (action['uid'] == data['courses'].id) {
+              data['specialization'] = action;
+            }
+          });
           finalData.add(data);
           //log("Member Category: ${data['category']}, Status: ${data['status']}");
         });

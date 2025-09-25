@@ -2,6 +2,7 @@ const eventCollection = "aios_0925";
 
 class AppConstants {
   static String eventCollectionName  = "aios_0925";
+
   static String memberCategoryDocName  = "member_category";
   static String memberRegistedDocName  = "members";
   static String memberRegistrationLatestID  = "latestID";
@@ -11,6 +12,7 @@ class AppConstants {
   static String sessionTimeDocName  = "session_time";
   static String abstractTypeDocName  = "abstract_type";
   static String abstractCategoryDocName  = "abstract_category";
+  static String courseDocName  = "courses_all";
 
   static String memberCategoryColName  = "mem_ct";
   static String memberRegisteredColName  = "all_mem";
@@ -20,4 +22,5 @@ class AppConstants {
   static String sessionTimeColName  = "sess_time";
   static String abstractTypeColName  = "abs_type";
   static String abstractCategoryColName  = "abs_ctgry";
+  static String courseColName  = "course_all";
 }

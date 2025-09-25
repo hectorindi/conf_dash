@@ -48,11 +48,12 @@ class _ShowMemberRegistrationState extends State<ShowMemberRegistration> {
                     DataColumn(label: Text("Email")),
                     DataColumn(label: Text("Phone")),
                     DataColumn(label: Text("Address")),
+                    DataColumn(label: Text("State")),
+                    DataColumn(label: Text("city")),
+                    DataColumn(label: Text("pincode")),
                     DataColumn(label: Text("Member Type")),
                     DataColumn(label: Text("Specialization")),
-                    DataColumn(label: Text("Created At")),
-                    DataColumn(label: Text("Status")),
-                    DataColumn(label: Text("Is Admin")),
+                    DataColumn(label: Text("Reg ID")),
                     DataColumn(label: Text("Actions")),
                   ],
                   rows: widget.memberData.map((data) => _buildDataRow(data)).toList(),
@@ -120,7 +121,7 @@ class _ShowMemberRegistrationState extends State<ShowMemberRegistration> {
               SizedBox(
                 width: 80,
                 child: Text(
-                  "Status:",
+                  "Reg ID:",
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.grey[400],
@@ -132,13 +133,13 @@ class _ShowMemberRegistrationState extends State<ShowMemberRegistration> {
                 child: Container(
                   padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: (memberCategory['status'] ?? 'N/A').toLowerCase() == 'active' 
+                    color: (memberCategory['regID'] ?? 'N/A').toLowerCase() == memberCategory['regID'] 
                         ? Colors.green 
                         : Colors.orange,
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Text(
-                    (memberCategory['status'] ?? 'N/A').toUpperCase(),
+                    (memberCategory['regID'] ?? 'N/A').toUpperCase(),
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 11,
@@ -194,6 +195,15 @@ class _ShowMemberRegistrationState extends State<ShowMemberRegistration> {
           ((data['emailMobile'] != null) ? (data['emailMobile'].toString().split("/")[1]) : 'N/A')
         ),
         DataCell(Text(data['address'] ?? 'N/A')),
+        DataCell(Text
+          ((data['city_state_pincode'] != null) ? (data['city_state_pincode'].toString().split("_")[1]) : 'N/A')
+        ),
+        DataCell(Text
+          ((data['city_state_pincode'] != null) ? (data['city_state_pincode'].toString().split("_")[0]) : 'N/A')
+        ),
+        DataCell(Text
+          ((data['city_state_pincode'] != null) ? (data['city_state_pincode'].toString().split("_")[2]) : 'N/A')
+        ),
         DataCell(
           Container(
             padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -217,29 +227,27 @@ class _ShowMemberRegistrationState extends State<ShowMemberRegistration> {
               borderRadius: BorderRadius.circular(4),
             ),
             child: Text(
-              data['specialization'] ?? 'N/A',
+              data['specialization']['name'] ?? 'N/A',
               style: TextStyle(fontSize: 11),
             ),
           ),
         ),
-        DataCell(Text(_formatTimestamp(data['createdAt']))),
         DataCell(
           Container(
             padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
-              color: (data['status'] == 'active' ? Colors.green : Colors.orange).withOpacity(0.2),
+              color: (data['regID'] == data['regID'] ? Colors.green : Colors.orange).withOpacity(0.2),
               border: Border.all(
-                color: data['status'] == 'active' ? Colors.green : Colors.orange
+                color: data['regID'] == data['regID'] ? Colors.green : Colors.orange
               ),
               borderRadius: BorderRadius.circular(4),
             ),
             child: Text(
-              (data['status'] ?? 'N/A').toUpperCase(),
+              (data['regID'] ?? 'N/A').toUpperCase(),
               style: TextStyle(fontSize: 11),
             ),
           ),
         ),
-        DataCell(Text(data['isAdmin'] == true ? 'Yes' : 'No')),
         DataCell(
           Row(
             mainAxisSize: MainAxisSize.min,
