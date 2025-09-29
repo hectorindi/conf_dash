@@ -166,6 +166,24 @@ class DatabaseServices {
     return [{errorText: "Something went wrong"}];
   }
 
+  Future< List<Map<String, dynamic>>> getRegisterationDataFromDatabase() async {
+    try {
+      List<Map<String, dynamic>> memberCategory = await getMemberCategoryFromDatabase();
+      List<Map<String, dynamic>> delegateTypes = await getMemberDelegateTypeFromDatabase();
+      List<Map<String, dynamic>> specialization = await getSpecializationFromDatabase();
+      //log("Fetching Member Category");
+      
+      final List<Map<String, dynamic>> finalData= [];
+      finalData.add({"memberCategory": memberCategory});
+      finalData.add({"delegateTypes": delegateTypes});
+      finalData.add({"specialization": specialization});
+      return finalData;
+    } catch (e) {
+      //log('Error fetching member category: $e');
+      return [{errorText: e.toString()}];
+    }
+  }
+
   Future<List <Map<String, dynamic>>> getRegisteredMemebersFromDatabase() async {
     try {
       CollectionReference ref = _firestore.collection(AppConstants.eventCollectionName).doc(AppConstants.memberRegistedDocName).collection(AppConstants.memberRegisteredColName);

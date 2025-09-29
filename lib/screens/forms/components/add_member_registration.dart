@@ -12,28 +12,70 @@ import 'package:admin/core/utils/Utils.dart';
 class AddMemberRegistration extends StatefulWidget {
   const AddMemberRegistration({
     Key? key,
+    required this.registrationData,
   }) : super(key: key);
+
+  final List<Map<String, dynamic>> registrationData;
 
   @override
   State<AddMemberRegistration> createState() => _AddMemberRegistrationState();
 }
 
 class _AddMemberRegistrationState extends State<AddMemberRegistration> {
-  String? _selectedItem = 'active'; // Variable to hold the selected item
-  TextEditingController categoryController = TextEditingController();
+  String? _selectedDelegate = 'active'; // Variable to hold the selected item
+  TextEditingController delegateTypeController = TextEditingController();
+
+  String? _selectedMemCat = 'active'; // Variable to hold the selected item
+  TextEditingController memCategoryController = TextEditingController();
+
+  TextEditingController rateController = TextEditingController();
   bool _isEnabled = true;
 
+  String? selectedMemberCategory;
+  Map<String, dynamic>? selectedMemberCategoryMap;
+
+  @override
+  void initState() {
+    super.initState();
+    // Set initial value from the first category if available
+    if (widget.registrationData[0][0] == null && widget.registrationData.isNotEmpty && widget.registrationData[0][0].isNotEmpty) {
+      selectedMemberCategory = widget.registrationData[0][0]["category"];
+    }
+  }
+
+  Map<String, dynamic> getmemeberID() {
+    List<Map<String, dynamic>> memData = [] ;//widget.registrationData[0]["memberCategory"];
+    Map<String, dynamic> result = {};
+    
+    for (var value in memData) {
+      if (value['category'] == selectedMemberCategory) {
+        return value; // Return the matching category map
+      }
+    }
+    return {}; // Return empty map if no match found
+  }
+
   void submitData() {
-    //log("Adding Member Category: ${categoryController.text} with status: $_selectedItem by user: ${categoryController.text}");
-    memberService.value.addMemberCategoryToDatabase(
-      categoryController.text,
-      _selectedItem!,
+    //log("Adding DelegateType type : ${delegateTypeController.text} with status: $_selectedItem");
+    Map<String, dynamic> memberData = getmemeberID();
+    double rate = double.parse(rateController.text);
+    
+    // Extract the uid string from the map
+    String uid = memberData['uid']?.toString() ?? '';
+    
+    memberService.value.addDelegateTypeToDatabase(
+      delegateTypeController.text,
+      _selectedDelegate!,
+      rate,
+      uid  // Pass the uid as String
     );
+    
     setState(() {
       _isEnabled = false;
     });
-    showNewDialog(context, Colors.green, "Member Category Added Successfully");
-    Future.delayed( Duration(seconds: 1), () {
+    
+    showNewDialog(context, Colors.green, "Member delegate type Added Successfully");
+    Future.delayed(Duration(seconds: 1), () {
       Navigator.of(context).pop();
     });
   }
@@ -57,7 +99,7 @@ class _AddMemberRegistrationState extends State<AddMemberRegistration> {
           children: [
             InputWidget(
               keyboardType: TextInputType.emailAddress,
-              kController: categoryController,
+              kController: delegateTypeController,
               onSaved: (String? value) {
                 // This optional block of code can be used to run
                 // code when the user saves the form.
@@ -66,13 +108,29 @@ class _AddMemberRegistrationState extends State<AddMemberRegistration> {
                 // This optional block of code can be used to run
                 // code when the user saves the form.
               },
-              validator: (String? value) {
-                return (value != null && value.contains('@'))
-                    ? 'Do not use the @ char.'
-                    : null;
+
+              topLabel: "Delegate Type",
+
+              hintText: "Delegate Type",
+              // prefixIcon: FlutterIcons.chevron_left_fea,
+            ),
+            SizedBox(height: 16.0),
+            InputWidget(
+              keyboardType: TextInputType.number,
+              kController: rateController,
+              onSaved: (String? value) {
+                // This optional block of code can be used to run
+                // code when the user saves the form.
               },
-              topLabel: "Category",
-              hintText: "Enter Name",
+              onChanged: (String? value) {
+                // This optional block of code can be used to run
+                // code when the user saves the form.
+              },
+
+              topLabel: "Rate",
+
+              hintText: "Rate",
+              // prefixIcon: FlutterIcons.chevron_left_fea,
             ),
             SizedBox(height: 16.0),
             Text(          
@@ -83,7 +141,7 @@ class _AddMemberRegistrationState extends State<AddMemberRegistration> {
                   .copyWith(fontSize: 16),
             ),
             DropdownButton(
-            value: _selectedItem, // Set the currently selected item
+            value: _selectedDelegate, // Set the currently selected item
               items: <DropdownMenuItem<String>>[
                 DropdownMenuItem<String>(
                   value: 'active',
@@ -97,9 +155,25 @@ class _AddMemberRegistrationState extends State<AddMemberRegistration> {
             onChanged: (String? value) {
               // This is called when the user selects an item.
               setState(() {
-                _selectedItem = value; // Update the selected item
+                _selectedDelegate = value; // Update the selected item
               });
             }),
+            SizedBox(height: 24.0),
+            // DropdownButton<String>(
+            //   value: selectedMemberCategory,
+            //   hint: Text("Select Member Category"),
+            //   items: widget.registrationData[0]["memberCategory"].map<DropdownMenuItem<String>>((category) {
+            //     return DropdownMenuItem<String>(
+            //       value: category['category'],
+            //       child: Text(category['category']),
+            //     );
+            //   }).toList(),
+            //   onChanged: (String? newValue) {
+            //     setState(() {
+            //       selectedMemberCategory = newValue;
+            //     });
+            //   },
+            // ),
             SizedBox(height: 24.0),
             ElevatedButton(
               style: TextButton.styleFrom(
@@ -122,20 +196,28 @@ class _AddMemberRegistrationState extends State<AddMemberRegistration> {
   }
 }
 
-DataRow recentUserDataRow(RecentUser userInfo) {
+DataRow recentUserDataRow(
+  Map<String, dynamic> memberCategory, 
+  String selectedValue,
+  Function(String?) onChanged,
+  int index
+) {
   return DataRow(
     cells: [
-      DataCell(Container(
-          padding: EdgeInsets.all(5),
-          decoration: BoxDecoration(
-            color: getRoleColor(userInfo.role).withOpacity(.2),
-            border: Border.all(color: getRoleColor(userInfo.role)),
-            borderRadius: BorderRadius.all(Radius.circular(5.0) //
-                ),
-          ),
-          child: Text(userInfo.role!))),
-      DataCell(Text(userInfo.date!)),
-      DataCell(Text(userInfo.posts!)),
+      DataCell(Text(memberCategory['delegate_type'] ?? 'N/A')), // Category column
+      DataCell(Text(memberCategory['createdAt']?.toString() ?? 'N/A')), // Created Date column
+      DataCell( // Member Category column with dropdown
+        DropdownButton<String>(
+          value: selectedValue,
+          items: memberCategory["memberCategory"].map<DropdownMenuItem<String>>((category) {
+            return DropdownMenuItem<String>(
+              value: category['category'],
+              child: Text(category['category']),
+            );
+          }).toList(),
+          onChanged: onChanged,
+        ),
+      ),
     ],
   );
 }

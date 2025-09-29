@@ -2,6 +2,7 @@ import 'package:admin/core/constants/color_constants.dart';
 import 'package:admin/data/database_services.dart';
 import 'package:admin/responsive.dart';
 import 'package:admin/screens/forms/components/add_member_category.dart';
+import 'package:admin/screens/forms/components/add_member_registration.dart';
 import 'package:admin/screens/forms/components/show_member_registration.dart';
 import 'package:flutter/material.dart';
 //import 'dart:developer';
@@ -87,7 +88,24 @@ class _EventRegistrationWidgetState extends State<EventRegistrationWidget> {
                   
                   Visibility(
                     visible: _visible,
-                    child: AddMemberCategory(),
+                    child: FutureBuilder(
+                      future: memberService.value.getRegisterationDataFromDatabase(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting || 
+                            snapshot.data == null) {
+                          return Container(
+                            height: 200,
+                            child: Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                          );
+                        } else {
+                          final List<Map<String, dynamic>> registrationData = 
+                              snapshot.data as List<Map<String, dynamic>>;
+                          return AddMemberRegistration(registrationData: registrationData);
+                        }
+                      },
+                    ),
                   ),
                   
                   SizedBox(height: isMobile ? 16 : 24),
