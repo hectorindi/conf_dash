@@ -54,6 +54,7 @@ dependencies:
   firebase_auth: ^6.0.2
   firebase_core: ^4.1.0
   cloud_firestore: ^6.0.1
+  csv: ^6.0.0
 
 dev_dependencies:
   flutter_test:
@@ -75,6 +76,9 @@ flutter:
     - assets/icons/
     - assets/logo/
     - assets/slides/
+    - assets/res/registration-report.csv
+    - assets/res/abstract-report.csv
+    - assets/res/faculty-report.csv
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

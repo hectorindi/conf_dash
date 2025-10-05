@@ -4,12 +4,331 @@ import 'package:admin/models/daily_info_model.dart';
 import 'package:admin/responsive.dart';
 import 'package:admin/screens/dashboard/components/mini_information_widget.dart';
 import 'package:admin/screens/forms/input_form.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:csv/csv.dart';
+import 'package:flutter/services.dart' show rootBundle;
 
-class MiniInformation extends StatelessWidget {
+class MiniInformation extends StatefulWidget {
   const MiniInformation({
     Key? key,
   }) : super(key: key);
+
+  @override
+  State<MiniInformation> createState() => _MiniInformationState();
+}
+
+class _MiniInformationState extends State<MiniInformation> {
+  void _importCSV() async {
+    try {
+      final CollectionReference collectionRef = FirebaseFirestore.instance.collection('registration-report');
+      final CollectionReference collectionRef2 = FirebaseFirestore.instance.collection('abscabstract-report');
+      final CollectionReference collectionRef3 = FirebaseFirestore.instance.collection('faculty-report');
+      final rawData = await rootBundle.loadString("assets/res/registration-report.csv");
+      final rawData2 = await rootBundle.loadString("assets/res/abstract-report.csv");
+      final rawData3 = await rootBundle.loadString("assets/res/faculty-report.csv");
+
+      // Parse CSV with proper delimiter and field separator
+      List<List<dynamic>> listData = const CsvToListConverter(
+        fieldDelimiter: ',',
+        textDelimiter: '"',
+        textEndDelimiter: '"',
+        eol: '\n',
+      ).convert(rawData);
+
+      List<List<dynamic>> listData2 = const CsvToListConverter(
+        fieldDelimiter: ',',
+        textDelimiter: '"',
+        textEndDelimiter: '"',
+        eol: '\n',
+      ).convert(rawData2);
+
+      List<List<dynamic>> listData3 = const CsvToListConverter(
+        fieldDelimiter: ',',
+        textDelimiter: '"',
+        textEndDelimiter: '"',
+        eol: '\n',
+      ).convert(rawData3);
+
+      listData2.forEach((element) {
+        print("Abstract Report:");
+        print(element);
+      });
+
+      listData3.forEach((element) {
+        print("Faculty Report:");
+        print(element);
+      });
+      
+      int successCount = 0;
+      int failCount = 0;
+      List<String> errors = [];
+      
+      // Show loading dialog
+      _showLoadingDialog();
+
+      // Skip header row if it exists
+      int startIndex = (listData.isNotEmpty && listData[0].contains('Member Category')) ? 1 : 0;
+      
+      for (int i = startIndex; i < listData.length; i++) {
+        var row = listData[i];
+        
+        // Skip empty rows
+        if (row.isEmpty || (row.length == 1 && row[0].toString().trim().isEmpty)) {
+          continue;
+        }
+        
+        try {
+          // Ensure we have enough columns, pad with empty strings if needed
+          while (row.length < 28) {
+            row.add('');
+          }
+
+          final data = _getDatafromJSON(row, 'registration-report', i);
+
+          await collectionRef.add(data);
+          successCount++;
+          
+          // Add a small delay to prevent overwhelming Firestore
+          if (i % 10 == 0) {
+            await Future.delayed(Duration(milliseconds: 100));
+          }
+          
+        } catch (e) {
+          failCount++;
+          errors.add('Row ${i + 1}: ${e.toString()}');
+          print('Error importing row ${i + 1}: $e');
+          print('Row data: $row');
+        }
+      }
+      
+      // Hide loading dialog
+      if (Navigator.of(context).canPop()) {
+        Navigator.of(context).pop();
+      }
+      
+      // Show result dialog
+      _showResultDialog(successCount, failCount, errors);
+      
+    } catch (e) {
+      // Hide loading dialog if still showing
+      if (Navigator.of(context).canPop()) {
+        Navigator.of(context).pop();
+      }
+      _showErrorDialog('Failed to load CSV file: ${e.toString()}');
+      print('CSV Import Error: $e');
+    }
+  }
+
+  _getDatafromJSON(row, dbName, i) {
+  var finaldata = {};
+  
+  if (dbName == 'registration-report') {
+    finaldata = {
+      'Member Category': row.length > 0 ? row[0]?.toString() ?? '' : '',
+      'Delegate Category': row.length > 1 ? row[1]?.toString() ?? '' : '',
+      'Membership No.': row.length > 2 ? row[2]?.toString() ?? '' : '',
+      'Name': row.length > 3 ? row[3]?.toString() ?? '' : '',
+      'Registration No.': row.length > 4 ? row[4]?.toString() ?? '' : '',
+      'Gender': row.length > 5 ? row[5]?.toString() ?? '' : '',
+      'Email': row.length > 6 ? row[6]?.toString() ?? '' : '',
+      'Mobile': row.length > 7 ? row[7]?.toString() ?? '' : '',
+      'Institute': row.length > 8 ? row[8]?.toString() ?? '' : '',
+      'Address': row.length > 9 ? row[9]?.toString() ?? '' : '',
+      'City': row.length > 10 ? row[10]?.toString() ?? '' : '',
+      'State': row.length > 11 ? row[11]?.toString() ?? '' : '',
+      'Country': row.length > 12 ? row[12]?.toString() ?? '' : '',
+      'Pin Code': row.length > 13 ? row[13]?.toString() ?? '' : '',
+      'Spouse Name': row.length > 14 ? row[14]?.toString() ?? '' : '',
+      'Child 1': row.length > 15 ? row[15]?.toString() ?? '' : '',
+      'Child 2': row.length > 16 ? row[16]?.toString() ?? '' : '',
+      'Certificate': row.length > 17 ? row[17]?.toString() ?? '' : '',
+      'Net Lab': row.length > 18 ? row[18]?.toString() ?? '' : '',
+      'Delegate Fees': row.length > 19 ? row[19]?.toString() ?? '' : '',
+      'Accompany Fees': row.length > 20 ? row[20]?.toString() ?? '' : '',
+      'Net Lab Fees': row.length > 21 ? row[21]?.toString() ?? '' : '',
+      'GST': row.length > 22 ? row[22]?.toString() ?? '' : '',
+      'Transaction Fees': row.length > 23 ? row[23]?.toString() ?? '' : '',
+      'Total Fees': row.length > 24 ? row[24]?.toString() ?? '' : '',
+      'Transaction Id': row.length > 25 ? row[25]?.toString() ?? '' : '',
+      'Payment Message': row.length > 26 ? row[26]?.toString() ?? '' : '',
+      'Payment Status': row.length > 27 ? row[27]?.toString() ?? '' : '',
+      'createdAt': DateTime.now().toIso8601String(),
+      'importedAt': DateTime.now().toIso8601String(),
+      'rowIndex': i,
+    };
+    return finaldata;
+    
+  } else if (dbName == 'faculty-report') {
+    finaldata = {
+      'Abstract ID': row.length > 0 ? row[0]?.toString() ?? '' : '',
+      'Member Type': row.length > 1 ? row[1]?.toString() ?? '' : '',
+      'Membership No': row.length > 2 ? row[2]?.toString() ?? '' : '',
+      'Name': row.length > 3 ? row[3]?.toString() ?? '' : '',
+      'Qualification': row.length > 4 ? row[4]?.toString() ?? '' : '',
+      'Year of Passing': row.length > 5 ? row[5]?.toString() ?? '' : '',
+      'Designation': row.length > 6 ? row[6]?.toString() ?? '' : '',
+      'Institute': row.length > 7 ? row[7]?.toString() ?? '' : '',
+      'Age': row.length > 8 ? row[8]?.toString() ?? '' : '',
+      'Photograph': row.length > 9 ? row[9]?.toString() ?? '' : '',
+      'Address': row.length > 10 ? row[10]?.toString() ?? '' : '',
+      'City': row.length > 11 ? row[11]?.toString() ?? '' : '',
+      'State': row.length > 12 ? row[12]?.toString() ?? '' : '',
+      'Pincode': row.length > 13 ? row[13]?.toString() ?? '' : '',
+      'Email': row.length > 14 ? row[14]?.toString() ?? '' : '',
+      'Mobile': row.length > 15 ? row[15]?.toString() ?? '' : '',
+      'Specialty Subject Category 1': row.length > 16 ? row[16]?.toString() ?? '' : '',
+      'Specialty Sub Subject Category 1': row.length > 17 ? row[17]?.toString() ?? '' : '',
+      'Topic 1': row.length > 18 ? row[18]?.toString() ?? '' : '',
+      'Topic 2': row.length > 19 ? row[19]?.toString() ?? '' : '',
+      'Specialty Subject Category 2': row.length > 20 ? row[20]?.toString() ?? '' : '',
+      'Specialty Sub Subject Category 2': row.length > 21 ? row[21]?.toString() ?? '' : '',
+      'Topic 3': row.length > 22 ? row[22]?.toString() ?? '' : '',
+      'Topic 4': row.length > 23 ? row[23]?.toString() ?? '' : '',
+      'Preferred Date (Subject to availability)': row.length > 24 ? row[24]?.toString() ?? '' : '',
+      'Date': row.length > 25 ? row[25]?.toString() ?? '' : '',
+      'createdAt': DateTime.now().toIso8601String(),
+      'importedAt': DateTime.now().toIso8601String(),
+      'rowIndex': i,
+    };
+    return finaldata;
+    
+  } else if (dbName == 'abstract-report') {
+    finaldata = {
+      'Abstract ID': row.length > 0 ? row[0]?.toString() ?? '' : '',
+      'Member Type': row.length > 1 ? row[1]?.toString() ?? '' : '',
+      'DOS MSNO': row.length > 2 ? row[2]?.toString() ?? '' : '',
+      'Name': row.length > 3 ? row[3]?.toString() ?? '' : '',
+      'Email': row.length > 4 ? row[4]?.toString() ?? '' : '',
+      'Mobile': row.length > 5 ? row[5]?.toString() ?? '' : '',
+      'Institute': row.length > 6 ? row[6]?.toString() ?? '' : '',
+      'Registration No.': row.length > 7 ? row[7]?.toString() ?? '' : '',
+      'Presentation Type': row.length > 8 ? row[8]?.toString() ?? '' : '',
+      'Category': row.length > 9 ? row[9]?.toString() ?? '' : '',
+      'Title of Abstract': row.length > 10 ? row[10]?.toString() ?? '' : '',
+      'Title of Video': row.length > 11 ? row[11]?.toString() ?? '' : '',
+      'Abstract Synopsis': row.length > 12 ? row[12]?.toString() ?? '' : '',
+      'Co-Authors Member Type 1': row.length > 13 ? row[13]?.toString() ?? '' : '',
+      'Co-Authors DOS MSNO 1': row.length > 14 ? row[14]?.toString() ?? '' : '',
+      'Co-Authors Name 1': row.length > 15 ? row[15]?.toString() ?? '' : '',
+      'Co-Authors Email 1': row.length > 16 ? row[16]?.toString() ?? '' : '',
+      'Co-Authors Mobile 1': row.length > 17 ? row[17]?.toString() ?? '' : '',
+      'Co-Authors Institution 1': row.length > 18 ? row[18]?.toString() ?? '' : '',
+      'Co-Authors Member Type 2': row.length > 19 ? row[19]?.toString() ?? '' : '',
+      'Co-Authors DOS MSNO 2': row.length > 20 ? row[20]?.toString() ?? '' : '',
+      'Co-Authors Name 2': row.length > 21 ? row[21]?.toString() ?? '' : '',
+      'Co-Authors Email 2': row.length > 22 ? row[22]?.toString() ?? '' : '',
+      'Co-Authors Mobile 2': row.length > 23 ? row[23]?.toString() ?? '' : '',
+      'Co-Authors Institution 2': row.length > 24 ? row[24]?.toString() ?? '' : '',
+      'Co-Authors Member Type 3': row.length > 25 ? row[25]?.toString() ?? '' : '',
+      'Co-Authors DOS MSNO 3': row.length > 26 ? row[26]?.toString() ?? '' : '',
+      'Co-Authors Name 3': row.length > 27 ? row[27]?.toString() ?? '' : '',
+      'Co-Authors Email 3': row.length > 28 ? row[28]?.toString() ?? '' : '',
+      'Co-Authors Mobile 3': row.length > 29 ? row[29]?.toString() ?? '' : '',
+      'Co-Authors Institution 3': row.length > 30 ? row[30]?.toString() ?? '' : '',
+      'Co-Authors Member Type 4': row.length > 31 ? row[31]?.toString() ?? '' : '',
+      'Co-Authors DOS MSNO 4': row.length > 32 ? row[32]?.toString() ?? '' : '',
+      'Co-Authors Name 4': row.length > 33 ? row[33]?.toString() ?? '' : '',
+      'Co-Authors Email 4': row.length > 34 ? row[34]?.toString() ?? '' : '',
+      'Co-Authors Mobile 4': row.length > 35 ? row[35]?.toString() ?? '' : '',
+      'Co-Authors Institution 4': row.length > 36 ? row[36]?.toString() ?? '' : '',
+      'Date': row.length > 37 ? row[37]?.toString() ?? '' : '',
+      'createdAt': DateTime.now().toIso8601String(),
+      'importedAt': DateTime.now().toIso8601String(),
+      'rowIndex': i,
+    };
+    return finaldata;
+  }
+  
+  return finaldata;
+}
+
+  void _showLoadingDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: secondaryColor,
+          content: Container(
+            padding: EdgeInsets.all(20),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(greenColor),
+                ),
+                SizedBox(width: 20),
+                Text(
+                  "Importing data...",
+                  style: TextStyle(color: Colors.white),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _showResultDialog(int successCount, int failCount, List<String> errors) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Import Results"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text("✅ Successfully imported: $successCount records"),
+              if (failCount > 0) ...[
+                SizedBox(height: 10),
+                Text("❌ Failed to import: $failCount records"),
+                if (errors.isNotEmpty) ...[
+                  SizedBox(height: 10),
+                  Text("Errors:", style: TextStyle(fontWeight: FontWeight.bold)),
+                  Container(
+                    height: 100,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: errors.map((error) => Text(error, style: TextStyle(fontSize: 12))).toList(),
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Error"),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,16 +350,14 @@ class MiniInformation extends StatelessWidget {
                       defaultPadding / (Responsive.isMobile(context) ? 2 : 1),
                 ),
               ),
-              onPressed: () {
-                Navigator.of(context).push(new MaterialPageRoute<Null>(
-                    builder: (BuildContext context) {
-                      return new FormMaterial();
-                    },
-                    fullscreenDialog: true));
-              },
+              onPressed: _importCSV,
               icon: Icon(Icons.add),
               label: Text(
-                "Add New",
+                "Import Data",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: Responsive.isMobile(context) ? 10 : 16,
+                ),
               ),
             ),
           ],

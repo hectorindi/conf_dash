@@ -13,6 +13,8 @@ void main() async {
   runApp(const MyApp());
 }
 
+String? title = "Smart Dashboard - Admin Panel v0.1";
+
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
@@ -20,7 +22,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Smart Dashboard - Admin Panel v0.1',
+      title: title!,
       theme: ThemeData.dark().copyWith(
         appBarTheme: AppBarTheme(
           backgroundColor: bgColor,
