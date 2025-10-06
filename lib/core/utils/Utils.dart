@@ -16,3 +16,28 @@ void showNewDialog (BuildContext context, Color bgColor, String msg) {
       ],
     ))));
 }
+
+void showLoadingDialog(BuildContext context, Color secondaryColor, Color primaryColor, Text text) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: secondaryColor,
+          content: Container(
+            padding: EdgeInsets.all(20),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(primaryColor),
+                ),
+                SizedBox(width: 20),
+                text,
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
