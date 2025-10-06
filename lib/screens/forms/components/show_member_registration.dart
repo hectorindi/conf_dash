@@ -56,7 +56,9 @@ class _ShowMemberRegistrationState extends State<ShowMemberRegistration> {
                     DataColumn(label: Text("Reg ID")),
                     DataColumn(label: Text("Actions")),
                   ],
-                  rows: widget.memberData.map((data) => _buildDataRow(data)).toList(),
+                  rows: widget.memberData
+                      .map((data) => _buildDataRow(data))
+                      .toList(),
                 ),
               ),
             ),
@@ -102,7 +104,7 @@ class _ShowMemberRegistrationState extends State<ShowMemberRegistration> {
                   child: Text(
                     memberCategory['category'] ?? 'N/A',
                     style: TextStyle(
-                      color: Colors.white, 
+                      color: Colors.white,
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
                     ),
@@ -114,7 +116,7 @@ class _ShowMemberRegistrationState extends State<ShowMemberRegistration> {
             ],
           ),
           SizedBox(height: 12),
-          
+
           // Status
           Row(
             children: [
@@ -133,8 +135,9 @@ class _ShowMemberRegistrationState extends State<ShowMemberRegistration> {
                 child: Container(
                   padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: (memberCategory['regID'] ?? 'N/A').toLowerCase() == memberCategory['regID'] 
-                        ? Colors.green 
+                    color: (memberCategory['regID'] ?? 'N/A').toLowerCase() ==
+                            memberCategory['regID']
+                        ? Colors.green
                         : Colors.orange,
                     borderRadius: BorderRadius.circular(4),
                   ),
@@ -151,7 +154,7 @@ class _ShowMemberRegistrationState extends State<ShowMemberRegistration> {
             ],
           ),
           SizedBox(height: 12),
-          
+
           // Created Date
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -171,7 +174,7 @@ class _ShowMemberRegistrationState extends State<ShowMemberRegistration> {
                 child: Text(
                   _formatTimestamp(memberCategory['createdAt']),
                   style: TextStyle(
-                    color: Colors.white, 
+                    color: Colors.white,
                     fontSize: 12,
                   ),
                   maxLines: 2,
@@ -188,22 +191,22 @@ class _ShowMemberRegistrationState extends State<ShowMemberRegistration> {
     return DataRow(
       cells: [
         DataCell(Text(data['name'] ?? 'N/A')),
-        DataCell(Text
-          ((data['emailMobile'] != null) ? (data['emailMobile'].toString().split("/")[0]) : 'N/A')
-        ),
-        DataCell(Text
-          ((data['emailMobile'] != null) ? (data['emailMobile'].toString().split("/")[1]) : 'N/A')
-        ),
+        DataCell(Text((data['emailMobile'] != null)
+            ? (data['emailMobile'].toString().split("/")[0])
+            : 'N/A')),
+        DataCell(Text((data['emailMobile'] != null)
+            ? (data['emailMobile'].toString().split("/")[1])
+            : 'N/A')),
         DataCell(Text(data['address'] ?? 'N/A')),
-        DataCell(Text
-          ((data['city_state_pincode'] != null) ? (data['city_state_pincode'].toString().split("_")[1]) : 'N/A')
-        ),
-        DataCell(Text
-          ((data['city_state_pincode'] != null) ? (data['city_state_pincode'].toString().split("_")[0]) : 'N/A')
-        ),
-        DataCell(Text
-          ((data['city_state_pincode'] != null) ? (data['city_state_pincode'].toString().split("_")[2]) : 'N/A')
-        ),
+        DataCell(Text((data['city_state_pincode'] != null)
+            ? (data['city_state_pincode'].toString().split("_")[1])
+            : 'N/A')),
+        DataCell(Text((data['city_state_pincode'] != null)
+            ? (data['city_state_pincode'].toString().split("_")[0])
+            : 'N/A')),
+        DataCell(Text((data['city_state_pincode'] != null)
+            ? (data['city_state_pincode'].toString().split("_")[2])
+            : 'N/A')),
         DataCell(
           Container(
             padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -236,10 +239,14 @@ class _ShowMemberRegistrationState extends State<ShowMemberRegistration> {
           Container(
             padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
-              color: (data['regID'] == data['regID'] ? Colors.green : Colors.orange).withOpacity(0.2),
+              color: (data['regID'] == data['regID']
+                      ? Colors.green
+                      : Colors.orange)
+                  .withOpacity(0.2),
               border: Border.all(
-                color: data['regID'] == data['regID'] ? Colors.green : Colors.orange
-              ),
+                  color: data['regID'] == data['regID']
+                      ? Colors.green
+                      : Colors.orange),
               borderRadius: BorderRadius.circular(4),
             ),
             child: Text(
@@ -271,10 +278,10 @@ class _ShowMemberRegistrationState extends State<ShowMemberRegistration> {
 
   String _formatTimestamp(dynamic timestamp) {
     if (timestamp == null) return 'N/A';
-    
+
     try {
       DateTime? dateTime;
-      
+
       // If it's already a DateTime
       if (timestamp is DateTime) {
         dateTime = timestamp;
@@ -285,7 +292,7 @@ class _ShowMemberRegistrationState extends State<ShowMemberRegistration> {
         String timestampStr = timestamp.toString();
         RegExp regExp = RegExp(r'seconds=(\d+)');
         Match? match = regExp.firstMatch(timestampStr);
-        
+
         if (match != null) {
           int seconds = int.parse(match.group(1)!);
           dateTime = DateTime.fromMillisecondsSinceEpoch(seconds * 1000);
@@ -297,16 +304,16 @@ class _ShowMemberRegistrationState extends State<ShowMemberRegistration> {
       }
       // If it's an integer (milliseconds or seconds)
       else if (timestamp is int) {
-        dateTime = timestamp > 1000000000000 
+        dateTime = timestamp > 1000000000000
             ? DateTime.fromMillisecondsSinceEpoch(timestamp)
             : DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
       }
-      
+
       if (dateTime != null) {
         // Format as "Sep 19, 2025 14:30"
         return DateFormat('MMM dd, yyyy HH:mm').format(dateTime);
       }
-      
+
       return timestamp.toString();
     } catch (e) {
       return 'Invalid Date';

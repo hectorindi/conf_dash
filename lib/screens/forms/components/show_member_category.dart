@@ -32,7 +32,7 @@ class _ShowMemberCategoryState extends State<ShowMemberCategory> {
           // Mobile Layout
           if (Responsive.isMobile(context))
             ...widget.memberData.map((data) => _buildMobileCard(data)).toList()
-          
+
           // Desktop/Tablet Layout
           else
             SingleChildScrollView(
@@ -97,7 +97,7 @@ class _ShowMemberCategoryState extends State<ShowMemberCategory> {
                   child: Text(
                     memberCategory['category'] ?? 'N/A',
                     style: TextStyle(
-                      color: Colors.white, 
+                      color: Colors.white,
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
                     ),
@@ -109,7 +109,7 @@ class _ShowMemberCategoryState extends State<ShowMemberCategory> {
             ],
           ),
           SizedBox(height: 12),
-          
+
           // Status
           Row(
             children: [
@@ -128,8 +128,9 @@ class _ShowMemberCategoryState extends State<ShowMemberCategory> {
                 child: Container(
                   padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: (memberCategory['status'] ?? 'N/A').toLowerCase() == 'active' 
-                        ? Colors.green 
+                    color: (memberCategory['status'] ?? 'N/A').toLowerCase() ==
+                            'active'
+                        ? Colors.green
                         : Colors.orange,
                     borderRadius: BorderRadius.circular(4),
                   ),
@@ -146,7 +147,7 @@ class _ShowMemberCategoryState extends State<ShowMemberCategory> {
             ],
           ),
           SizedBox(height: 12),
-          
+
           // Created Date
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -166,7 +167,7 @@ class _ShowMemberCategoryState extends State<ShowMemberCategory> {
                 child: Text(
                   _formatTimestamp(memberCategory['createdAt']),
                   style: TextStyle(
-                    color: Colors.white, 
+                    color: Colors.white,
                     fontSize: 12,
                   ),
                   maxLines: 2,
@@ -213,10 +214,10 @@ class _ShowMemberCategoryState extends State<ShowMemberCategory> {
 
   String _formatTimestamp(dynamic timestamp) {
     if (timestamp == null) return 'N/A';
-    
+
     try {
       DateTime? dateTime;
-      
+
       // If it's already a DateTime
       if (timestamp is DateTime) {
         dateTime = timestamp;
@@ -227,7 +228,7 @@ class _ShowMemberCategoryState extends State<ShowMemberCategory> {
         String timestampStr = timestamp.toString();
         RegExp regExp = RegExp(r'seconds=(\d+)');
         Match? match = regExp.firstMatch(timestampStr);
-        
+
         if (match != null) {
           int seconds = int.parse(match.group(1)!);
           dateTime = DateTime.fromMillisecondsSinceEpoch(seconds * 1000);
@@ -239,16 +240,16 @@ class _ShowMemberCategoryState extends State<ShowMemberCategory> {
       }
       // If it's an integer (milliseconds or seconds)
       else if (timestamp is int) {
-        dateTime = timestamp > 1000000000000 
+        dateTime = timestamp > 1000000000000
             ? DateTime.fromMillisecondsSinceEpoch(timestamp)
             : DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
       }
-      
+
       if (dateTime != null) {
         // Format as "Sep 19, 2025 14:30"
         return DateFormat('MMM dd, yyyy HH:mm').format(dateTime);
       }
-      
+
       return timestamp.toString();
     } catch (e) {
       return 'Invalid Date';

@@ -1,5 +1,6 @@
 import 'package:admin/core/constants/color_constants.dart';
 import 'package:admin/core/utils/colorful_tag.dart';
+import 'package:admin/screens/dashboard/components/recent_users.dart';
 import 'package:admin/models/recent_user_model.dart';
 import 'package:flutter/material.dart';
 
@@ -10,7 +11,9 @@ class RecentDiscussions extends StatelessWidget {
   Widget build(BuildContext context) {
     final Size _size = MediaQuery.of(context).size;
     final bool isMobile = _size.width < 600;
-    
+
+    final recentUsers = [];
+
     return Container(
       height: 400,
       padding: EdgeInsets.all(defaultPadding),

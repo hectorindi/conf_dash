@@ -24,7 +24,7 @@ class _MemberCategoryWidgetState extends State<MemberCategoryWidget> {
   Widget build(BuildContext context) {
     final isMobile = Responsive.isMobile(context);
     final isTablet = Responsive.isTablet(context);
-    
+
     return Scaffold(
       appBar: AppBar(),
       body: SingleChildScrollView(
@@ -51,16 +51,18 @@ class _MemberCategoryWidgetState extends State<MemberCategoryWidget> {
                     _buildMobileHeader(context)
                   else
                     _buildDesktopHeader(context),
-                  
+
                   SizedBox(height: isMobile ? 16 : 24),
-                  
+
                   // Content Section
                   Visibility(
                     visible: !_visible,
                     child: FutureBuilder(
-                      future: memberService.value.getMemberCategoryFromDatabase(),
+                      future:
+                          memberService.value.getMemberCategoryFromDatabase(),
                       builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting || 
+                        if (snapshot.connectionState ==
+                                ConnectionState.waiting ||
                             snapshot.data == null) {
                           return Container(
                             height: 200,
@@ -69,19 +71,19 @@ class _MemberCategoryWidgetState extends State<MemberCategoryWidget> {
                             ),
                           );
                         } else {
-                          final List<Map<String, dynamic>> memberData = 
+                          final List<Map<String, dynamic>> memberData =
                               snapshot.data as List<Map<String, dynamic>>;
                           return ShowMemberCategory(memberData: memberData);
                         }
                       },
                     ),
                   ),
-                  
+
                   Visibility(
                     visible: _visible,
                     child: AddMemberCategory(),
                   ),
-                  
+
                   SizedBox(height: isMobile ? 16 : 24),
                 ],
               ),
@@ -99,9 +101,9 @@ class _MemberCategoryWidgetState extends State<MemberCategoryWidget> {
         Text(
           "Member Category",
           style: Theme.of(context).textTheme.headlineSmall!.copyWith(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
         ),
         SizedBox(height: 16),
         SizedBox(
@@ -138,9 +140,9 @@ class _MemberCategoryWidgetState extends State<MemberCategoryWidget> {
         Text(
           "Member Category",
           style: Theme.of(context).textTheme.headlineLarge!.copyWith(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
         ),
         Spacer(),
         ElevatedButton.icon(
@@ -149,7 +151,8 @@ class _MemberCategoryWidgetState extends State<MemberCategoryWidget> {
             foregroundColor: Colors.white,
             padding: EdgeInsets.symmetric(
               horizontal: defaultPadding * 1.5,
-              vertical: defaultPadding / (Responsive.isTablet(context) ? 1.5 : 1),
+              vertical:
+                  defaultPadding / (Responsive.isTablet(context) ? 1.5 : 1),
             ),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),

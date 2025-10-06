@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 //import 'dart:developer';
 
 class EventRegistrationWidget extends StatefulWidget {
-
   const EventRegistrationWidget({
     Key? key,
     required this.title,
@@ -17,7 +16,8 @@ class EventRegistrationWidget extends StatefulWidget {
   final String title;
 
   @override
-  _EventRegistrationWidgetState createState() => _EventRegistrationWidgetState();
+  _EventRegistrationWidgetState createState() =>
+      _EventRegistrationWidgetState();
 }
 
 class _EventRegistrationWidgetState extends State<EventRegistrationWidget> {
@@ -33,7 +33,7 @@ class _EventRegistrationWidgetState extends State<EventRegistrationWidget> {
   Widget build(BuildContext context) {
     final isMobile = Responsive.isMobile(context);
     final isTablet = Responsive.isTablet(context);
-    
+
     return Scaffold(
       appBar: AppBar(),
       body: SingleChildScrollView(
@@ -60,16 +60,18 @@ class _EventRegistrationWidgetState extends State<EventRegistrationWidget> {
                     _buildMobileHeader(context)
                   else
                     _buildDesktopHeader(context),
-                  
+
                   SizedBox(height: isMobile ? 16 : 24),
-                  
+
                   // Content Section
                   Visibility(
                     visible: !_visible,
                     child: FutureBuilder(
-                      future: memberService.value.getRegisteredMemebersFromDatabase(),
+                      future: memberService.value
+                          .getRegisteredMemebersFromDatabase(),
                       builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting || 
+                        if (snapshot.connectionState ==
+                                ConnectionState.waiting ||
                             snapshot.data == null) {
                           return Container(
                             height: 200,
@@ -78,20 +80,22 @@ class _EventRegistrationWidgetState extends State<EventRegistrationWidget> {
                             ),
                           );
                         } else {
-                          final List<Map<String, dynamic>> memberData = 
+                          final List<Map<String, dynamic>> memberData =
                               snapshot.data as List<Map<String, dynamic>>;
                           return ShowMemberRegistration(memberData: memberData);
                         }
                       },
                     ),
                   ),
-                  
+
                   Visibility(
                     visible: _visible,
                     child: FutureBuilder(
-                      future: memberService.value.getRegisterationDataFromDatabase(),
+                      future: memberService.value
+                          .getRegisterationDataFromDatabase(),
                       builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting || 
+                        if (snapshot.connectionState ==
+                                ConnectionState.waiting ||
                             snapshot.data == null) {
                           return Container(
                             height: 200,
@@ -100,14 +104,15 @@ class _EventRegistrationWidgetState extends State<EventRegistrationWidget> {
                             ),
                           );
                         } else {
-                          final List<Map<String, dynamic>> registrationData = 
+                          final List<Map<String, dynamic>> registrationData =
                               snapshot.data as List<Map<String, dynamic>>;
-                          return AddMemberRegistration(registrationData: registrationData);
+                          return AddMemberRegistration(
+                              registrationData: registrationData);
                         }
                       },
                     ),
                   ),
-                  
+
                   SizedBox(height: isMobile ? 16 : 24),
                 ],
               ),
@@ -125,9 +130,9 @@ class _EventRegistrationWidgetState extends State<EventRegistrationWidget> {
         Text(
           widget.title,
           style: Theme.of(context).textTheme.headlineSmall!.copyWith(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
         ),
         SizedBox(height: 16),
         SizedBox(
@@ -164,9 +169,9 @@ class _EventRegistrationWidgetState extends State<EventRegistrationWidget> {
         Text(
           widget.title,
           style: Theme.of(context).textTheme.headlineLarge!.copyWith(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
         ),
         Spacer(),
         ElevatedButton.icon(
@@ -175,7 +180,8 @@ class _EventRegistrationWidgetState extends State<EventRegistrationWidget> {
             foregroundColor: Colors.white,
             padding: EdgeInsets.symmetric(
               horizontal: defaultPadding * 1.5,
-              vertical: defaultPadding / (Responsive.isTablet(context) ? 1.5 : 1),
+              vertical:
+                  defaultPadding / (Responsive.isTablet(context) ? 1.5 : 1),
             ),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),

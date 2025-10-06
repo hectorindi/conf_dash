@@ -19,6 +19,7 @@ class _MemberDelegateWidgetState extends State<MemberDelegateWidget> {
       _visible = !_visible;
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,10 +39,11 @@ class _MemberDelegateWidgetState extends State<MemberDelegateWidget> {
                     Row(
                       children: [
                         Center(
-                          child: Text("Category Type", style: Theme.of(context)
-                            .textTheme
-                            .headlineLarge!
-                            .copyWith(color: Colors.white)),
+                          child: Text("Category Type",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headlineLarge!
+                                  .copyWith(color: Colors.white)),
                         ),
                         Spacer(),
                         ElevatedButton.icon(
@@ -49,8 +51,8 @@ class _MemberDelegateWidgetState extends State<MemberDelegateWidget> {
                             backgroundColor: Colors.green,
                             padding: EdgeInsets.symmetric(
                               horizontal: defaultPadding * 1.5,
-                              vertical:
-                                  defaultPadding / (Responsive.isMobile(context) ? 2 : 1),
+                              vertical: defaultPadding /
+                                  (Responsive.isMobile(context) ? 2 : 1),
                             ),
                           ),
                           onPressed: () {
@@ -67,14 +69,19 @@ class _MemberDelegateWidgetState extends State<MemberDelegateWidget> {
                     Visibility(
                       visible: !_visible,
                       child: FutureBuilder(
-                        future: memberService.value.getMemberDelegateTypeFromDatabase(),
+                        future: memberService.value
+                            .getMemberDelegateTypeFromDatabase(),
                         builder: (context, snapshot) {
-                          if (snapshot.connectionState == ConnectionState.waiting || snapshot.data == null) {
+                          if (snapshot.connectionState ==
+                                  ConnectionState.waiting ||
+                              snapshot.data == null) {
                             return Center(child: CircularProgressIndicator());
                           } else {
-                            final List<Map<String, dynamic>> memberData = snapshot.data as List<Map<String, dynamic>>;
+                            final List<Map<String, dynamic>> memberData =
+                                snapshot.data as List<Map<String, dynamic>>;
                             //log("Member Data: $memberData");
-                            return ShowMemberDelegateType(memberData: memberData);
+                            return ShowMemberDelegateType(
+                                memberData: memberData);
                           }
                         },
                       ),
@@ -82,14 +89,19 @@ class _MemberDelegateWidgetState extends State<MemberDelegateWidget> {
                     Visibility(
                       visible: _visible,
                       child: FutureBuilder(
-                        future: memberService.value.getMemberDelegateTypeFromDatabase(),
+                        future: memberService.value
+                            .getMemberDelegateTypeFromDatabase(),
                         builder: (context, snapshot) {
-                          if (snapshot.connectionState == ConnectionState.waiting || snapshot.data == null) {
+                          if (snapshot.connectionState ==
+                                  ConnectionState.waiting ||
+                              snapshot.data == null) {
                             return Center(child: CircularProgressIndicator());
                           } else {
-                            final List<Map<String, dynamic>> memberData = snapshot.data as List<Map<String, dynamic>>;
+                            final List<Map<String, dynamic>> memberData =
+                                snapshot.data as List<Map<String, dynamic>>;
                             //log("Member Data: $memberData");
-                            return AddMemberDelegateType(memberData: memberData);
+                            return AddMemberDelegateType(
+                                memberData: memberData);
                           }
                         },
                       ),

@@ -33,7 +33,7 @@ class _AddMemberCategoryState extends State<AddMemberCategory> {
       _isEnabled = false;
     });
     showNewDialog(context, Colors.green, "Member Category Added Successfully");
-    Future.delayed( Duration(seconds: 1), () {
+    Future.delayed(Duration(seconds: 1), () {
       Navigator.of(context).pop();
     });
   }
@@ -41,87 +41,86 @@ class _AddMemberCategoryState extends State<AddMemberCategory> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(defaultPadding),
-      decoration: BoxDecoration(
-        color: secondaryColor,
-        borderRadius: const BorderRadius.all(Radius.circular(10)),
-      ),
-      child: Container(
-      width: double.infinity,
-      constraints: BoxConstraints(
-        minHeight: MediaQuery.of(context).size.height - 0.0,
-      ),
-      child: Form(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            InputWidget(
-              keyboardType: TextInputType.emailAddress,
-              kController: categoryController,
-              onSaved: (String? value) {
-                // This optional block of code can be used to run
-                // code when the user saves the form.
-              },
-              onChanged: (String? value) {
-                // This optional block of code can be used to run
-                // code when the user saves the form.
-              },
-              validator: (String? value) {
-                return (value != null && value.contains('@'))
-                    ? 'Do not use the @ char.'
-                    : null;
-              },
-
-              topLabel: "Category",
-
-              hintText: "Enter Name",
-              // prefixIcon: FlutterIcons.chevron_left_fea,
-            ),
-            SizedBox(height: 16.0),
-            Text(          
-              "Status",
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyMedium!
-                  .copyWith(fontSize: 16),
-            ),
-            DropdownButton(
-            value: _selectedItem, // Set the currently selected item
-              items: <DropdownMenuItem<String>>[
-                DropdownMenuItem<String>(
-                  value: 'active',
-                  child: Text('Active'),
-                ),
-                DropdownMenuItem<String>(
-                  value: 'inactive',
-                  child: Text('Inactive'),
-                ),
-            ],
-            onChanged: (String? value) {
-              // This is called when the user selects an item.
-              setState(() {
-                _selectedItem = value; // Update the selected item
-              });
-            }),
-            SizedBox(height: 24.0),
-            ElevatedButton(
-              style: TextButton.styleFrom(
-                backgroundColor: Colors.green,
-                foregroundColor: Colors.white,
-                padding: EdgeInsets.symmetric(
-                  horizontal: defaultPadding * 1.5,
-                  vertical:
-                      defaultPadding / (Responsive.isMobile(context) ? 2 : 1),
-                ),
-              ),
-              onPressed: _isEnabled ? submitData : null,
-              child: Text("Submit"),
-            ),
-          ],
+        padding: EdgeInsets.all(defaultPadding),
+        decoration: BoxDecoration(
+          color: secondaryColor,
+          borderRadius: const BorderRadius.all(Radius.circular(10)),
         ),
-      ),
-      )
-    );
+        child: Container(
+          width: double.infinity,
+          constraints: BoxConstraints(
+            minHeight: MediaQuery.of(context).size.height - 0.0,
+          ),
+          child: Form(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                InputWidget(
+                  keyboardType: TextInputType.emailAddress,
+                  kController: categoryController,
+                  onSaved: (String? value) {
+                    // This optional block of code can be used to run
+                    // code when the user saves the form.
+                  },
+                  onChanged: (String? value) {
+                    // This optional block of code can be used to run
+                    // code when the user saves the form.
+                  },
+                  validator: (String? value) {
+                    return (value != null && value.contains('@'))
+                        ? 'Do not use the @ char.'
+                        : null;
+                  },
+
+                  topLabel: "Category",
+
+                  hintText: "Enter Name",
+                  // prefixIcon: FlutterIcons.chevron_left_fea,
+                ),
+                SizedBox(height: 16.0),
+                Text(
+                  "Status",
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyMedium!
+                      .copyWith(fontSize: 16),
+                ),
+                DropdownButton(
+                    value: _selectedItem, // Set the currently selected item
+                    items: <DropdownMenuItem<String>>[
+                      DropdownMenuItem<String>(
+                        value: 'active',
+                        child: Text('Active'),
+                      ),
+                      DropdownMenuItem<String>(
+                        value: 'inactive',
+                        child: Text('Inactive'),
+                      ),
+                    ],
+                    onChanged: (String? value) {
+                      // This is called when the user selects an item.
+                      setState(() {
+                        _selectedItem = value; // Update the selected item
+                      });
+                    }),
+                SizedBox(height: 24.0),
+                ElevatedButton(
+                  style: TextButton.styleFrom(
+                    backgroundColor: Colors.green,
+                    foregroundColor: Colors.white,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: defaultPadding * 1.5,
+                      vertical: defaultPadding /
+                          (Responsive.isMobile(context) ? 2 : 1),
+                    ),
+                  ),
+                  onPressed: _isEnabled ? submitData : null,
+                  child: Text("Submit"),
+                ),
+              ],
+            ),
+          ),
+        ));
   }
 }
 

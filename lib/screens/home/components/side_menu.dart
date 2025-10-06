@@ -33,37 +33,35 @@ class SideMenu extends StatelessWidget {
                 Text("Confrence Dashboard")
               ],
             )),
-            CustomExpansionTileList(
-              elementList: [
-                {
-                  "title": "Master Setup",
-                  "icon": "assets/icons/menu_dashboard.svg",
-                  "state": "/dashboard",
-                  "children": [
-                    {
-                      "title": "Member Category",
-                      "icon": "assets/icons/menu_dashboard.svg",
-                      "state": "/member_category"
-                    },
-                    {
-                      "title": "Delegate Category",
-                      "icon": "assets/icons/menu_dashboard.svg",
-                      "state": "/delegate_category"
-                    }
-                  ]
-                }
-              ],
-              isSidebar: true
-            ),
+            CustomExpansionTileList(elementList: [
+              {
+                "title": "Master Setup",
+                "icon": "assets/icons/menu_dashboard.svg",
+                "state": "/dashboard",
+                "children": [
+                  {
+                    "title": "Member Category",
+                    "icon": "assets/icons/menu_dashboard.svg",
+                    "state": "/member_category"
+                  },
+                  {
+                    "title": "Delegate Category",
+                    "icon": "assets/icons/menu_dashboard.svg",
+                    "state": "/delegate_category"
+                  }
+                ]
+              }
+            ], isSidebar: true),
             DrawerListTile(
               title: "Members",
               svgSrc: "assets/icons/menu_tran.svg",
               press: () {
                 Navigator.of(context).push(MaterialPageRoute<Null>(
-                  builder: (BuildContext context) {
-                    return EventRegistrationWidget(title: "Event Registration");
-                  },
-                fullscreenDialog: true));
+                    builder: (BuildContext context) {
+                      return EventRegistrationWidget(
+                          title: "Event Registration");
+                    },
+                    fullscreenDialog: true));
               },
             ),
           ],

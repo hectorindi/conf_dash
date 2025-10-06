@@ -298,7 +298,7 @@ class _ChatPopupState extends State<ChatPopup> with TickerProviderStateMixin {
 
       // Fetch data from relevant collections
       Map<String, List<QueryDocumentSnapshot>> allCollectionData = {};
-      
+
       for (String collection in collectionsToQuery) {
         final snapshot = await FirebaseFirestore.instance
             .collection(collection)
@@ -340,20 +340,26 @@ class _ChatPopupState extends State<ChatPopup> with TickerProviderStateMixin {
       _analyzeRegistrationData(docs, analysis);
     }
 
+    print(analysis);
     return analysis.toString();
   }
 
-  String _performCrossAnalysis(Map<String, List<QueryDocumentSnapshot>> allData, String userQuery) {
+  String _performCrossAnalysis(
+      Map<String, List<QueryDocumentSnapshot>> allData, String userQuery) {
     final analysis = StringBuffer();
     analysis.writeln('=== Cross-Database Analysis ===');
 
     // Email-based cross-analysis
-    if (userQuery.contains('email') || userQuery.contains('same person') || userQuery.contains('topics for same')) {
+    if (userQuery.contains('email') ||
+        userQuery.contains('same person') ||
+        userQuery.contains('topics for same')) {
       analysis.writeln(_analyzeByEmail(allData));
     }
 
     // Institution-based analysis across databases
-    if (userQuery.contains('institution') || userQuery.contains('college') || userQuery.contains('university')) {
+    if (userQuery.contains('institution') ||
+        userQuery.contains('college') ||
+        userQuery.contains('university')) {
       analysis.writeln(_analyzeByInstitution(allData));
     }
 
@@ -363,29 +369,34 @@ class _ChatPopupState extends State<ChatPopup> with TickerProviderStateMixin {
     }
 
     // Payment status analysis
-    if (userQuery.contains('paid') || userQuery.contains('unpaid') || userQuery.contains('payment')) {
+    if (userQuery.contains('paid') ||
+        userQuery.contains('unpaid') ||
+        userQuery.contains('payment')) {
       analysis.writeln(_analyzePaymentStatus(allData));
     }
 
+    print(analysis);
     return analysis.toString();
   }
 
   String _analyzeByEmail(Map<String, List<QueryDocumentSnapshot>> allData) {
     final analysis = StringBuffer();
     analysis.writeln('--- Email Cross-Reference Analysis ---');
-    
+
     Map<String, Map<String, dynamic>> emailProfiles = {};
-    
+
     // Collect all email data from all collections
     allData.forEach((collection, docs) {
       for (var doc in docs) {
         final data = doc.data() as Map<String, dynamic>;
         final email = data['Email']?.toString().toLowerCase() ?? '';
-        
+
         if (email.isNotEmpty && email.contains('@')) {
           if (!emailProfiles.containsKey(email)) {
             emailProfiles[email] = {
-              'name': data['Name']?.toString() ?? data['First Name']?.toString() ?? '',
+              'name': data['Name']?.toString() ??
+                  data['First Name']?.toString() ??
+                  '',
               'collections': <String>{},
               'abstracts': <String>[],
               'institutions': <String>{},
@@ -393,9 +404,9 @@ class _ChatPopupState extends State<ChatPopup> with TickerProviderStateMixin {
               'cities': <String>{},
             };
           }
-          
+
           emailProfiles[email]!['collections'].add(collection);
-          
+
           // Collect abstracts/papers for this email
           if (collection == 'abstract-report') {
             final paperTitle = data['Paper Title']?.toString() ?? '';
@@ -403,21 +414,23 @@ class _ChatPopupState extends State<ChatPopup> with TickerProviderStateMixin {
               emailProfiles[email]!['abstracts'].add(paperTitle);
             }
           }
-          
+
           // Collect institutions
-          final institution = data['Institution']?.toString() ?? 
-                            data['Institution / College / University']?.toString() ?? '';
+          final institution = data['Institution']?.toString() ??
+              data['Institution / College / University']?.toString() ??
+              '';
           if (institution.isNotEmpty) {
             emailProfiles[email]!['institutions'].add(institution);
           }
-          
+
           // Collect roles/designations
-          final role = data['Designation']?.toString() ?? 
-                      data['Member Category']?.toString() ?? '';
+          final role = data['Designation']?.toString() ??
+              data['Member Category']?.toString() ??
+              '';
           if (role.isNotEmpty) {
             emailProfiles[email]!['roles'].add(role);
           }
-          
+
           // Collect cities
           final city = data['City']?.toString() ?? '';
           if (city.isNotEmpty) {
@@ -426,15 +439,15 @@ class _ChatPopupState extends State<ChatPopup> with TickerProviderStateMixin {
         }
       }
     });
-    
+
     // Find people with multiple activities
     int multiActiveUsers = 0;
     int totalAbstracts = 0;
-    
+
     emailProfiles.forEach((email, profile) {
       final collections = profile['collections'] as Set<String>;
       final abstracts = profile['abstracts'] as List<String>;
-      
+
       if (collections.length > 1) {
         multiActiveUsers++;
         analysis.writeln('• ${profile['name']} ($email):');
@@ -449,34 +462,39 @@ class _ChatPopupState extends State<ChatPopup> with TickerProviderStateMixin {
         }
       }
     });
-    
-    analysis.writeln('Summary: $multiActiveUsers people active across multiple databases');
-    analysis.writeln('Total abstracts from cross-active users: $totalAbstracts');
-    
+
+    analysis.writeln(
+        'Summary: $multiActiveUsers people active across multiple databases');
+    analysis
+        .writeln('Total abstracts from cross-active users: $totalAbstracts');
+
+    print(analysis);
     return analysis.toString();
   }
 
-  String _analyzeByInstitution(Map<String, List<QueryDocumentSnapshot>> allData) {
+  String _analyzeByInstitution(
+      Map<String, List<QueryDocumentSnapshot>> allData) {
     final analysis = StringBuffer();
     analysis.writeln('--- Institution Cross-Analysis ---');
-    
+
     Map<String, Map<String, int>> institutionStats = {};
-    
+
     allData.forEach((collection, docs) {
       for (var doc in docs) {
         final data = doc.data() as Map<String, dynamic>;
-        final institution = data['Institution']?.toString() ?? 
-                          data['Institution / College / University']?.toString() ?? 'Unknown';
-        
+        final institution = data['Institution']?.toString() ??
+            data['Institution / College / University']?.toString() ??
+            'Unknown';
+
         if (!institutionStats.containsKey(institution)) {
           institutionStats[institution] = {};
         }
-        
-        institutionStats[institution]![collection] = 
+
+        institutionStats[institution]![collection] =
             (institutionStats[institution]![collection] ?? 0) + 1;
       }
     });
-    
+
     // Sort by total participation
     final sortedInstitutions = institutionStats.entries.toList();
     sortedInstitutions.sort((a, b) {
@@ -484,86 +502,95 @@ class _ChatPopupState extends State<ChatPopup> with TickerProviderStateMixin {
       final bTotal = b.value.values.fold(0, (sum, count) => sum + count);
       return bTotal.compareTo(aTotal);
     });
-    
+
     analysis.writeln('Top Institutions by Total Participation:');
     for (var entry in sortedInstitutions.take(10)) {
       final institution = entry.key;
       final stats = entry.value;
       final total = stats.values.fold(0, (sum, count) => sum + count);
-      
+
       analysis.writeln('• $institution (Total: $total)');
       stats.forEach((collection, count) {
         analysis.writeln('  - $collection: $count');
       });
     }
-    
+
+    print(analysis);
     return analysis.toString();
   }
 
   String _analyzeByCityData(Map<String, List<QueryDocumentSnapshot>> allData) {
     final analysis = StringBuffer();
     analysis.writeln('--- City-wise Distribution ---');
-    
+
     Map<String, int> cityStats = {};
-    
+
     allData.forEach((collection, docs) {
       for (var doc in docs) {
         final data = doc.data() as Map<String, dynamic>;
         final city = data['City']?.toString() ?? 'Unknown';
-        
+
         cityStats[city] = (cityStats[city] ?? 0) + 1;
       }
     });
-    
+
     final sortedCities = cityStats.entries.toList();
     sortedCities.sort((a, b) => b.value.compareTo(a.value));
-    
+
     analysis.writeln('Top Cities by Participation:');
     for (var entry in sortedCities.take(15)) {
       analysis.writeln('• ${entry.key}: ${entry.value} members');
     }
-    
+
+    print(analysis);
     return analysis.toString();
   }
 
-  String _analyzePaymentStatus(Map<String, List<QueryDocumentSnapshot>> allData) {
+  String _analyzePaymentStatus(
+      Map<String, List<QueryDocumentSnapshot>> allData) {
     final analysis = StringBuffer();
     analysis.writeln('--- Payment Status Analysis ---');
-    
+
     Map<String, int> paymentStats = {'Paid': 0, 'Unpaid': 0, 'Unknown': 0};
-    
+
     // Check registration-report for payment information
     if (allData.containsKey('registration-report')) {
       for (var doc in allData['registration-report']!) {
         final data = doc.data() as Map<String, dynamic>;
-        
+
         // Check various possible payment field names
-        final paymentStatus = data['Payment Status']?.toString() ?? 
-                            data['Payment']?.toString() ?? 
-                            data['Paid']?.toString() ?? 
-                            data['Fee Status']?.toString() ?? 'Unknown';
-        
+        final paymentStatus = data['Payment Status']?.toString() ??
+            data['Payment']?.toString() ??
+            data['Paid']?.toString() ??
+            data['Fee Status']?.toString() ??
+            'Unknown';
+
         final normalizedStatus = paymentStatus.toLowerCase();
-        
-        if (normalizedStatus.contains('paid') && !normalizedStatus.contains('unpaid')) {
+
+        if (normalizedStatus.contains('paid') &&
+            !normalizedStatus.contains('unpaid')) {
           paymentStats['Paid'] = paymentStats['Paid']! + 1;
-        } else if (normalizedStatus.contains('unpaid') || normalizedStatus.contains('pending')) {
+        } else if (normalizedStatus.contains('unpaid') ||
+            normalizedStatus.contains('pending')) {
           paymentStats['Unpaid'] = paymentStats['Unpaid']! + 1;
         } else {
           paymentStats['Unknown'] = paymentStats['Unknown']! + 1;
         }
       }
-      
+
       final total = paymentStats.values.fold(0, (sum, count) => sum + count);
       analysis.writeln('Payment Status Distribution:');
       paymentStats.forEach((status, count) {
-        final percentage = total > 0 ? ((count / total) * 100).toStringAsFixed(1) : '0.0';
+        final percentage =
+            total > 0 ? ((count / total) * 100).toStringAsFixed(1) : '0.0';
         analysis.writeln('• $status: $count ($percentage%)');
       });
     } else {
-      analysis.writeln('Payment status data not available in current query scope.');
+      analysis
+          .writeln('Payment status data not available in current query scope.');
     }
-    
+
+    print(analysis);
     return analysis.toString();
   }
 
@@ -590,8 +617,9 @@ class _ChatPopupState extends State<ChatPopup> with TickerProviderStateMixin {
       cities[city] = (cities[city] ?? 0) + 1;
 
       // Track faculty names by institution
-      final facultyName = data['Name']?.toString() ?? 
-                         data['First Name']?.toString() ?? 'Unknown';
+      final facultyName = data['Name']?.toString() ??
+          data['First Name']?.toString() ??
+          'Unknown';
       if (!institutionFaculty.containsKey(institution)) {
         institutionFaculty[institution] = [];
       }
@@ -617,7 +645,7 @@ class _ChatPopupState extends State<ChatPopup> with TickerProviderStateMixin {
     analysis.writeln('Faculty Details for Top Institutions:');
     final topInstitutions = institutions.entries.toList()
       ..sort((a, b) => b.value.compareTo(a.value));
-    
+
     for (var institution in topInstitutions.take(3)) {
       analysis.writeln('${institution.key}:');
       final faculty = institutionFaculty[institution.key] ?? [];
@@ -675,15 +703,17 @@ class _ChatPopupState extends State<ChatPopup> with TickerProviderStateMixin {
       }
     }
 
-    analysis.writeln('Average Co-authors per Paper: ${(totalAuthors / docs.length).toStringAsFixed(1)}');
-    
+    analysis.writeln(
+        'Average Co-authors per Paper: ${(totalAuthors / docs.length).toStringAsFixed(1)}');
+
     analysis.writeln('Common Research Keywords:');
     topics.entries.take(8).forEach((entry) {
       analysis.writeln('- ${entry.key}: ${entry.value} papers');
     });
 
     // Authors with multiple papers
-    final multiPaperAuthors = authorPapers.entries.where((e) => e.value.length > 1);
+    final multiPaperAuthors =
+        authorPapers.entries.where((e) => e.value.length > 1);
     if (multiPaperAuthors.isNotEmpty) {
       analysis.writeln('Authors with Multiple Papers:');
       for (var entry in multiPaperAuthors.take(5)) {
@@ -724,10 +754,11 @@ class _ChatPopupState extends State<ChatPopup> with TickerProviderStateMixin {
       cities[city] = (cities[city] ?? 0) + 1;
 
       // Count payment status
-      final payment = data['Payment Status']?.toString() ?? 
-                     data['Payment']?.toString() ?? 
-                     data['Paid']?.toString() ?? 
-                     data['Fee Status']?.toString() ?? 'Unknown';
+      final payment = data['Payment Status']?.toString() ??
+          data['Payment']?.toString() ??
+          data['Paid']?.toString() ??
+          data['Fee Status']?.toString() ??
+          'Unknown';
       paymentStatus[payment] = (paymentStatus[payment] ?? 0) + 1;
     }
 
@@ -788,11 +819,17 @@ Please provide a data-driven response based on the database context above.
       return "I can track people across databases using email addresses:\n• Find authors with multiple paper submissions\n• Cross-reference faculty and registration data\n• Identify participants active in multiple areas\n• Show complete profiles across all collections\n\nTry asking: 'Show me people with multiple papers' or 'Cross-reference emails across databases'";
     } else if (message.contains('city') || message.contains('cities')) {
       return "City-wise analysis available:\n• Registration distribution by city\n• Faculty location mapping\n• Geographic participation patterns\n• City-based demographic insights\n\nI'll analyze all databases to show city-wise statistics and trends.";
-    } else if (message.contains('paid') || message.contains('unpaid') || message.contains('payment')) {
+    } else if (message.contains('paid') ||
+        message.contains('unpaid') ||
+        message.contains('payment')) {
       return "Payment status analysis includes:\n• Paid vs unpaid member breakdown\n• Payment completion rates\n• Revenue tracking by category\n• Outstanding payment identification\n\nI'll check the registration database for payment status details.";
-    } else if (message.contains('institution') || message.contains('college') || message.contains('university')) {
+    } else if (message.contains('institution') ||
+        message.contains('college') ||
+        message.contains('university')) {
       return "Institution analysis across all databases:\n• Faculty representation by institution\n• Student/member registrations per institution\n• Research paper submissions by institution\n• Cross-database institutional insights\n• Total participation metrics per institution";
-    } else if (message.contains('abstract') || message.contains('synopsis') || message.contains('research')) {
+    } else if (message.contains('abstract') ||
+        message.contains('synopsis') ||
+        message.contains('research')) {
       return "Advanced abstract analysis:\n• Abstract synopsis content insights\n• Research topic trend analysis\n• Multi-paper author identification\n• Collaboration pattern analysis\n• Keyword frequency and themes\n\nI can read and analyze the actual abstract content for detailed insights.";
     } else if (message.contains('faculty') || message.contains('teacher')) {
       return "Comprehensive faculty analysis:\n• Designation-wise breakdown\n• Institution and city distribution\n• Cross-reference with registration data\n• Faculty research participation\n• Detailed faculty profiles by institution";

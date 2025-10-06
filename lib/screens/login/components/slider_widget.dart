@@ -104,7 +104,8 @@ class _SliderWidgetState extends State<SliderWidget> {
                         Container(
                           alignment: Alignment.center,
                           child: Text(slides[index].altText!,
-                              style: Theme.of(context).textTheme.headlineMedium),
+                              style:
+                                  Theme.of(context).textTheme.headlineMedium),
                         ),
                         SizedBox(height: 12),
                         Container(

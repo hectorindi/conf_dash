@@ -102,11 +102,12 @@ class _MiniInformationWidgetState extends State<MiniInformationWidget> {
   @override
   Widget build(BuildContext context) {
     final isDesktop = MediaQuery.of(context).size.width >= 900;
-    
+
     return Container(
       constraints: BoxConstraints(
         minHeight: 150,
-        maxHeight: isDesktop ? double.infinity : 180, // Add max height for mobile
+        maxHeight:
+            isDesktop ? double.infinity : 180, // Add max height for mobile
       ),
       padding: EdgeInsets.all(defaultPadding),
       decoration: BoxDecoration(
@@ -122,9 +123,10 @@ class _MiniInformationWidgetState extends State<MiniInformationWidget> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                padding: EdgeInsets.all(defaultPadding * 0.5), // Reduced padding
+                padding:
+                    EdgeInsets.all(defaultPadding * 0.5), // Reduced padding
                 height: 35, // Reduced height
-                width: 35,  // Reduced width
+                width: 35, // Reduced width
                 decoration: BoxDecoration(
                   color: widget.dailyData.color!.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(10),
@@ -142,7 +144,8 @@ class _MiniInformationWidgetState extends State<MiniInformationWidget> {
                 items: ["Daily", "Weekly", "Monthly"]
                     .map((String value) => DropdownMenuItem<String>(
                           value: value,
-                          child: Text(value, style: TextStyle(fontSize: 12)), // Smaller text
+                          child: Text(value,
+                              style: TextStyle(fontSize: 12)), // Smaller text
                         ))
                     .toList(),
                 onChanged: (String? newValue) {
@@ -164,7 +167,9 @@ class _MiniInformationWidgetState extends State<MiniInformationWidget> {
                   widget.dailyData.title!,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.titleSmall, // Changed to titleSmall
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleSmall, // Changed to titleSmall
                 ),
               ),
               Flexible(
@@ -193,9 +198,10 @@ class _MiniInformationWidgetState extends State<MiniInformationWidget> {
               Flexible(
                 child: Text(
                   "${widget.dailyData.volumeData}",
-                  style: Theme.of(context).textTheme.bodySmall!.copyWith( // Changed to bodySmall
-                    color: Colors.white70,
-                  ),
+                  style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                        // Changed to bodySmall
+                        color: Colors.white70,
+                      ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -203,9 +209,10 @@ class _MiniInformationWidgetState extends State<MiniInformationWidget> {
               Flexible(
                 child: Text(
                   widget.dailyData.totalStorage!,
-                  style: Theme.of(context).textTheme.bodySmall!.copyWith( // Changed to bodySmall
-                    color: Colors.white,
-                  ),
+                  style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                        // Changed to bodySmall
+                        color: Colors.white,
+                      ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),

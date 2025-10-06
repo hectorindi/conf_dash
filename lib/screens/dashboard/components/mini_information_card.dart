@@ -1,14 +1,10 @@
 import 'package:admin/core/constants/color_constants.dart';
 import 'package:admin/models/daily_info_model.dart';
-
+import 'package:admin/data/registration_service.dart';
 import 'package:admin/responsive.dart';
 import 'package:admin/screens/dashboard/components/mini_information_widget.dart';
 import 'package:admin/screens/dashboard/components/chat_widget.dart';
-import 'package:admin/core/utils/Utils.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:csv/csv.dart';
-import 'package:flutter/services.dart' show rootBundle;
 
 class MiniInformation extends StatefulWidget {
   const MiniInformation({
@@ -20,162 +16,33 @@ class MiniInformation extends StatefulWidget {
 }
 
 class _MiniInformationState extends State<MiniInformation> {
-  void _importCSV() async {
+  void _exportData() async {
     try {
-      final CollectionReference registrationRef =
-          FirebaseFirestore.instance.collection('registration-report');
-      final CollectionReference abstractRef =
-          FirebaseFirestore.instance.collection('abstract-report');
-      final CollectionReference facultyRef =
-          FirebaseFirestore.instance.collection('faculty-report');
+      // Use the registration service to export data
+      bool success = await RegistrationService.exportRegistrationData();
 
-      final rawData =
-          await rootBundle.loadString("assets/res/registration-report.csv");
-      final rawData2 =
-          await rootBundle.loadString("assets/res/abstract-report.csv");
-      final rawData3 =
-          await rootBundle.loadString("assets/res/faculty-report.csv");
-
-      // Parse CSV with proper delimiter and field separator
-      List<List<dynamic>> registrationData = const CsvToListConverter(
-        fieldDelimiter: ',',
-        textDelimiter: '"',
-        textEndDelimiter: '"',
-        eol: '\n',
-      ).convert(rawData);
-
-      List<List<dynamic>> abstractData = const CsvToListConverter(
-        fieldDelimiter: ',',
-        textDelimiter: '"',
-        textEndDelimiter: '"',
-        eol: '\n',
-      ).convert(rawData2);
-
-      List<List<dynamic>> facultyData = const CsvToListConverter(
-        fieldDelimiter: ',',
-        textDelimiter: '"',
-        textEndDelimiter: '"',
-        eol: '\n',
-      ).convert(rawData3);
-
-      int totalSuccessCount = 0;
-      int totalFailCount = 0;
-      List<String> allErrors = [];
-
-
-      // Show loading dialog
-      showLoadingDialog(context, secondaryColor, greenColor, Text("Importing data..."));
-
-      // Process Registration Report
-      int startIndex = (registrationData.isNotEmpty &&
-              registrationData[0].contains('Member Category'))
-          ? 1
-          : 0;
-      for (int i = startIndex; i < registrationData.length; i++) {
-        var row = registrationData[i];
-
-        if (row.isEmpty ||
-            (row.length == 1 && row[0].toString().trim().isEmpty)) {
-          continue;
-        }
-
-        try {
-          while (row.length < 28) {
-            row.add('');
-          }
-
-          final data = _getDatafromJSON(row, 'registration-report', i);
-          await registrationRef.add(data);
-          totalSuccessCount++;
-
-          if (i % 10 == 0) {
-            await Future.delayed(Duration(milliseconds: 100));
-          }
-        } catch (e) {
-          totalFailCount++;
-          allErrors.add('Registration Row ${i + 1}: ${e.toString()}');
-          print('Error importing registration row ${i + 1}: $e');
-        }
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Registration data exported successfully'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to export registration data'),
+            backgroundColor: Colors.red,
+          ),
+        );
       }
-
-      // Process Abstract Report
-      startIndex =
-          (abstractData.isNotEmpty && abstractData[0].contains('Abstract ID'))
-              ? 1
-              : 0;
-      for (int i = startIndex; i < abstractData.length; i++) {
-        var row = abstractData[i];
-
-        if (row.isEmpty ||
-            (row.length == 1 && row[0].toString().trim().isEmpty)) {
-          continue;
-        }
-
-        try {
-          while (row.length < 38) {
-            row.add('');
-          }
-
-          final data = _getDatafromJSON(row, 'abstract-report', i);
-          await abstractRef.add(data);
-          totalSuccessCount++;
-
-          if (i % 10 == 0) {
-            await Future.delayed(Duration(milliseconds: 100));
-          }
-        } catch (e) {
-          totalFailCount++;
-          allErrors.add('Abstract Row ${i + 1}: ${e.toString()}');
-          print('Error importing abstract row ${i + 1}: $e');
-        }
-      }
-
-      // Process Faculty Report
-      startIndex =
-          (facultyData.isNotEmpty && facultyData[0].contains('Abstract ID'))
-              ? 1
-              : 0;
-      for (int i = startIndex; i < facultyData.length; i++) {
-        var row = facultyData[i];
-
-        if (row.isEmpty ||
-            (row.length == 1 && row[0].toString().trim().isEmpty)) {
-          continue;
-        }
-
-        try {
-          while (row.length < 26) {
-            row.add('');
-          }
-
-          final data = _getDatafromJSON(row, 'faculty-report', i);
-          await facultyRef.add(data);
-          totalSuccessCount++;
-
-          if (i % 10 == 0) {
-            await Future.delayed(Duration(milliseconds: 100));
-          }
-        } catch (e) {
-          totalFailCount++;
-          allErrors.add('Faculty Row ${i + 1}: ${e.toString()}');
-          print('Error importing faculty row ${i + 1}: $e');
-        }
-      }
-
-      // Hide loading dialog
-      if (Navigator.of(context).canPop()) {
-        Navigator.of(context).pop();
-      }
-
-      // Show result dialog
-      _showResultDialog(totalSuccessCount, totalFailCount, allErrors);
     } catch (e) {
-      // Hide loading dialog if still showing
-      if (Navigator.of(context).canPop()) {
-        Navigator.of(context).pop();
-      }
-      _showErrorDialog('Failed to load CSV file: ${e.toString()}');
-      print('CSV Import Error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error exporting data: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
@@ -396,14 +263,14 @@ class _MiniInformationState extends State<MiniInformation> {
                     backgroundColor: Colors.green,
                     padding: EdgeInsets.symmetric(
                       horizontal: defaultPadding * 1.5,
-                      vertical:
-                          defaultPadding / (Responsive.isMobile(context) ? 2 : 1),
+                      vertical: defaultPadding /
+                          (Responsive.isMobile(context) ? 2 : 1),
                     ),
                   ),
-                  onPressed: _importCSV,
+                  onPressed: _exportData,
                   icon: Icon(Icons.add),
                   label: Text(
-                    "Import Data",
+                    "Export Data",
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: Responsive.isMobile(context) ? 10 : 16,

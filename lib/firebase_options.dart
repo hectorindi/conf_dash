@@ -61,5 +61,4 @@ class DefaultFirebaseOptions {
     storageBucket: 'neflix-demo.firebasestorage.app',
     measurementId: 'G-SLGQJL6ZFE',
   );
-
 }

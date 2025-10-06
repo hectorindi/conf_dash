@@ -27,10 +27,11 @@ class _FormMemberCategoryState extends State<FormMemberCategory> {
                 child: Column(
                   children: [
                     Center(
-                      child: Text("Member Category", style: Theme.of(context)
-                        .textTheme
-                        .headlineLarge!
-                        .copyWith(color: Colors.white)),
+                      child: Text("Member Category",
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineLarge!
+                              .copyWith(color: Colors.white)),
                     ),
                     SizedBox(height: 24),
                     ShowMemberCategory(memberData: [{}]),

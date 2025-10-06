@@ -6,7 +6,8 @@ class RegisterSpecialityWidget extends StatefulWidget {
   final Function(String) callback;
 
   @override
-  State<RegisterSpecialityWidget> createState() => _RegisterSpecialityWidgetState();
+  State<RegisterSpecialityWidget> createState() =>
+      _RegisterSpecialityWidgetState();
 }
 
 class _RegisterSpecialityWidgetState extends State<RegisterSpecialityWidget> {
@@ -48,22 +49,22 @@ class _RegisterSpecialityWidgetState extends State<RegisterSpecialityWidget> {
       "value": false,
       "title": "Contact Lens Advanced ROSE-K Contact Lens Fitting (1 hour)",
     },
-        {
+    {
       "id": 7,
       "value": false,
       "title": "Perimetry",
     },
-        {
+    {
       "id": 8,
       "value": false,
       "title": "RNFL OCT",
     },
-        {
+    {
       "id": 9,
       "value": false,
       "title": "UBM",
     },
-        {
+    {
       "id": 10,
       "value": false,
       "title": "FFA",

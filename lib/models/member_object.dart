@@ -11,7 +11,16 @@ class MemberObject {
   String? lastID = '';
   bool isAdmin = false;
 
-  MemberObject({required this.uid, required this.name,  required this.accessToken, required this.isAdmin, this.specialization, this.address, this.email, this.createdAt, this.phoneNumber});
+  MemberObject(
+      {required this.uid,
+      required this.name,
+      required this.accessToken,
+      required this.isAdmin,
+      this.specialization,
+      this.address,
+      this.email,
+      this.createdAt,
+      this.phoneNumber});
 
   // You can also add methods to your custom object
   MemberObject.fromJson(Map<String, dynamic> json) {

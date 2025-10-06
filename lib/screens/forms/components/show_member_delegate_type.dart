@@ -14,27 +14,27 @@ class ShowMemberDelegateType extends StatefulWidget {
 }
 
 class _ShowMemberDelegateTypeState extends State<ShowMemberDelegateType> {
-  
   // Map to store selected values for each row
   Map<int, String> selectedValues = {};
 
   @override
   void initState() {
     super.initState();
-    if (widget.memberData.isNotEmpty && 
+    if (widget.memberData.isNotEmpty &&
         widget.memberData[0]["memberCategory"] != null) {
       // Initialize default values
       for (var i = 0; i < widget.memberData.length; i++) {
-        selectedValues[i] = widget.memberData[i]["memberCategory"]?[0]['category'];
+        selectedValues[i] =
+            widget.memberData[i]["memberCategory"]?[0]['category'];
       }
     }
   }
 
   void updateSelectedValue(int index, String value) {
-      setState(() {
-        selectedValues[index] = value;
-      });
-    }
+    setState(() {
+      selectedValues[index] = value;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +47,7 @@ class _ShowMemberDelegateTypeState extends State<ShowMemberDelegateType> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (widget.memberData.isEmpty) 
+          if (widget.memberData.isEmpty)
             Center(
               child: Padding(
                 padding: EdgeInsets.all(defaultPadding),
@@ -62,26 +62,25 @@ class _ShowMemberDelegateTypeState extends State<ShowMemberDelegateType> {
               width: double.infinity,
               child: DataTable(
                 horizontalMargin: 0,
-              columnSpacing: defaultPadding,
-              columns: [
-                DataColumn(
-                  label: Text("Category"),
-                ),
-                DataColumn(
-                  label: Text("Created Date"),
-                ),
-                DataColumn(
-                  label: Text("Memeber Category"),
-                ),
-              ],
-              rows: List.generate(
-                widget.memberData.length,
-                  (index) => recentUserDataRow(
-                    widget.memberData[index], 
-                    selectedValues[index] ?? 'N/A',  // Add null safety here
-                    (value) => updateSelectedValue(index, value!),
-                    index
+                columnSpacing: defaultPadding,
+                columns: [
+                  DataColumn(
+                    label: Text("Category"),
                   ),
+                  DataColumn(
+                    label: Text("Created Date"),
+                  ),
+                  DataColumn(
+                    label: Text("Memeber Category"),
+                  ),
+                ],
+                rows: List.generate(
+                  widget.memberData.length,
+                  (index) => recentUserDataRow(
+                      widget.memberData[index],
+                      selectedValues[index] ?? 'N/A', // Add null safety here
+                      (value) => updateSelectedValue(index, value!),
+                      index),
                 ),
               ),
             ),
@@ -91,32 +90,30 @@ class _ShowMemberDelegateTypeState extends State<ShowMemberDelegateType> {
   }
 }
 
-DataRow recentUserDataRow(
-    Map<String, dynamic> memberCategory, 
-    String selectedValue,
-    Function(String?) onChanged,
-    int index
-  ) {
+DataRow recentUserDataRow(Map<String, dynamic> memberCategory,
+    String selectedValue, Function(String?) onChanged, int index) {
   // Add null checks for memberCategory data
-  final items = (memberCategory["memberCategory"] as List?)?.map<DropdownMenuItem<String>>((category) {
-    return DropdownMenuItem<String>(
-      value: category['category'],
-      child: Text(category['category'] ?? 'N/A'),
-    );
-  })?.toList() ?? [];
+  final items = (memberCategory["memberCategory"] as List?)
+          ?.map<DropdownMenuItem<String>>((category) {
+        return DropdownMenuItem<String>(
+          value: category['category'],
+          child: Text(category['category'] ?? 'N/A'),
+        );
+      })?.toList() ??
+      [];
 
   return DataRow(
     cells: [
       DataCell(Text(memberCategory['delegate_type'] ?? 'N/A')),
       DataCell(Text(memberCategory['createdAt']?.toString() ?? 'N/A')),
       DataCell(
-        items.isEmpty 
-          ? Text('No categories available')
-          : DropdownButton<String>(
-              value: selectedValue,
-              items: items,
-              onChanged: onChanged,
-            ),
+        items.isEmpty
+            ? Text('No categories available')
+            : DropdownButton<String>(
+                value: selectedValue,
+                items: items,
+                onChanged: onChanged,
+              ),
       ),
     ],
   );

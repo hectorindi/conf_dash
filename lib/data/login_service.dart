@@ -12,7 +12,6 @@ ValueNotifier<AuthService> authService = ValueNotifier(AuthService());
 var errorText = "";
 
 class AuthService {
-
   // var
   final FirebaseAuth _auth = FirebaseAuth.instance;
   User? get currentUser => _auth.currentUser;
@@ -24,15 +23,23 @@ class AuthService {
         email: email,
         password: password,
       );
-      return LoginObject(name: userCredential.user?.displayName ?? '', successful: true, uid: userCredential.user?.uid);
+      return LoginObject(
+          name: userCredential.user?.displayName ?? '',
+          successful: true,
+          uid: userCredential.user?.uid);
     } catch (e) {
       print('Error signing in: $e');
-      return LoginObject(name: '', successful: true, uid: null, error: e.toString());
+      return LoginObject(
+          name: '', successful: true, uid: null, error: e.toString());
     }
   }
 
   bool checkRequiredFields(MemberObject member, String email, String password) {
-    if (member.name.isEmpty || member.address == null || member.phoneNumber == null || email.isEmpty || password.isEmpty) {
+    if (member.name.isEmpty ||
+        member.address == null ||
+        member.phoneNumber == null ||
+        email.isEmpty ||
+        password.isEmpty) {
       errorText = "Please fill all the required fields.";
       return false;
     }
@@ -43,24 +50,34 @@ class AuthService {
     return true;
   }
 
-  Future<LoginObject> signUp(MemberObject member , String email, String password) async {
+  Future<LoginObject> signUp(
+      MemberObject member, String email, String password) async {
     final bool isValid = checkRequiredFields(member, email, password);
     if (!isValid) {
-      return LoginObject(name: email, successful: false, uid: null, error: errorText);
+      return LoginObject(
+          name: email, successful: false, uid: null, error: errorText);
     }
     try {
-      UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+      UserCredential userCredential = await _auth
+          .createUserWithEmailAndPassword(
         email: email,
         password: password,
-      ).then((userCredential) async {
-        await memberService.value.addMemberDetailsToDatabase(userCredential, member);
+      )
+          .then((userCredential) async {
+        await memberService.value
+            .addMemberDetailsToDatabase(userCredential, member);
         return userCredential;
       });
-      return LoginObject(name: userCredential.user?.displayName ?? '', successful: true, uid: userCredential.user?.uid);
+      return LoginObject(
+          name: userCredential.user?.displayName ?? '',
+          successful: true,
+          uid: userCredential.user?.uid);
     } catch (e) {
       ////log('Error signing up: $e');
-      var errorMessage = e.toString().split(  '] ').last; // Extract message after '] '
-      return LoginObject(name: email, successful: false, uid: null, error: errorMessage);
+      var errorMessage =
+          e.toString().split('] ').last; // Extract message after '] '
+      return LoginObject(
+          name: email, successful: false, uid: null, error: errorMessage);
     }
   }
 
@@ -73,7 +90,6 @@ class AuthService {
       ////log('Error signing out: $e');
       return false;
     }
-    
   }
 
   Future<void> updateUserName(String name) async {

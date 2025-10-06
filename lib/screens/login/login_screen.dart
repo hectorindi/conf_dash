@@ -13,7 +13,7 @@ import 'dart:developer';
 class Login extends StatefulWidget {
   const Login({Key? key, required this.title}) : super(key: key);
   final String title;
-  
+
   @override
   _LoginState createState() => _LoginState();
 }
@@ -25,7 +25,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
       .chain(CurveTween(curve: Curves.ease));
 
   var _specialityStr = "";
-      
+
   AnimationController? _animationController;
   bool _isMoved = false;
   bool _isEnabled = true;
@@ -37,10 +37,10 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
   TextEditingController addressController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
 
-  void updateSpeciality(String value) => setState( () {
-    _specialityStr = value;
-    print("Speciality updated to $_specialityStr");
-  });
+  void updateSpeciality(String value) => setState(() {
+        _specialityStr = value;
+        print("Speciality updated to $_specialityStr");
+      });
 
   @override
   void initState() {
@@ -57,189 +57,194 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
     super.dispose();
   }
 
-void _onLoginPressed() async {
-  try {
-    if (!_isEnabled) return;
-  
-    setState(() {
-      _isEnabled = false;
-    });
+  void _onLoginPressed() async {
+    try {
+      if (!_isEnabled) return;
 
-    final LoginObject loginResult = await authService.value.signIn(
-      emailController.text,
-      passwordController.text,
-    );
+      setState(() {
+        _isEnabled = false;
+      });
 
-    if (loginResult.successful) {
-      // Access LoginObject properties
-      print('Welcome ${loginResult.uid}');
-            
-      // Navigate to next screen
-      //Navigator.pushReplacementNamed(context, '/home');
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => HomeScreen()),
+      final LoginObject loginResult = await authService.value.signIn(
+        emailController.text,
+        passwordController.text,
       );
-    } else {
-      // Handle login failure
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(loginResult.error ?? 'Login failed')),
-      );
-    }
-  } catch (error) {
-    setState(() => _isEnabled = true);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(error.toString()),
-        backgroundColor: Colors.red,
-      ),
-    );
-  }
-}
 
-void _onRegisterPressed() async {
-  try {
-    if (!_isEnabled) return;
-  
-    setState(() {
-      _isEnabled = false;
-    });
+      if (loginResult.successful) {
+        // Access LoginObject properties
+        print('Welcome ${loginResult.uid}');
 
-    MemberObject member = MemberObject(
-        uid: "",
-        name: nameController.text,
-        isAdmin: false,
-        address: addressController.text,
-        accessToken:"",
-        email: emailController.text,
-        phoneNumber: phoneController.text,
-        createdAt: DateTime.now().toString(),
-        specialization: _specialityStr,
-    );
-
-    final LoginObject loginResult = await authService.value.signUp(member, emailController.text, passwordController.text);
-
-    if (loginResult.successful) {
-      // Access LoginObject properties
-      print('Welcome ${loginResult.uid}');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Registered'),
-          backgroundColor: Colors.green),
-      );
-      Future.delayed( Duration(seconds: 1), () {
+        // Navigate to next screen
+        //Navigator.pushReplacementNamed(context, '/home');
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => HomeScreen()),
         );
-      });
-    } else {
-      // Handle login failure
+      } else {
+        // Handle login failure
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(loginResult.error ?? 'Login failed')),
+        );
+      }
+    } catch (error) {
+      setState(() => _isEnabled = true);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(loginResult.error ?? 'Register failed')),
+        SnackBar(
+          content: Text(error.toString()),
+          backgroundColor: Colors.red,
+        ),
       );
     }
-  } catch (error) {
-    setState(() => _isEnabled = true);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(error.toString()),
-        backgroundColor: Colors.red,
+  }
+
+  void _onRegisterPressed() async {
+    try {
+      if (!_isEnabled) return;
+
+      setState(() {
+        _isEnabled = false;
+      });
+
+      MemberObject member = MemberObject(
+        uid: "",
+        name: nameController.text,
+        isAdmin: false,
+        address: addressController.text,
+        accessToken: "",
+        email: emailController.text,
+        phoneNumber: phoneController.text,
+        createdAt: DateTime.now().toString(),
+        specialization: _specialityStr,
+      );
+
+      final LoginObject loginResult = await authService.value
+          .signUp(member, emailController.text, passwordController.text);
+
+      if (loginResult.successful) {
+        // Access LoginObject properties
+        print('Welcome ${loginResult.uid}');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Registered'), backgroundColor: Colors.green),
+        );
+        Future.delayed(Duration(seconds: 1), () {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => HomeScreen()),
+          );
+        });
+      } else {
+        // Handle login failure
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(loginResult.error ?? 'Register failed')),
+        );
+      }
+    } catch (error) {
+      setState(() => _isEnabled = true);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(error.toString()),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final isDesktop = size.width >= 600;
+
+    return Scaffold(
+      backgroundColor: bgColor, // Change this
+      body: SafeArea(
+        child: Container(
+          // Add this container
+          color: bgColor,
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                child: Container(
+                  height: constraints.maxHeight,
+                  color: bgColor, // Add this
+                  child: isDesktop
+                      ? Row(
+                          children: _buildContent(context),
+                        )
+                      : Column(
+                          children: _buildContent(context),
+                        ),
+                ),
+              );
+            },
+          ),
+        ),
       ),
     );
   }
-}
-
-@override
-Widget build(BuildContext context) {
-  final size = MediaQuery.of(context).size;
-  final isDesktop = size.width >= 600;
-
-  return Scaffold(
-    backgroundColor: bgColor, // Change this
-    body: SafeArea(
-      child: Container( // Add this container
-        color: bgColor,
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            return SingleChildScrollView(
-              child: Container(
-                height: constraints.maxHeight,
-                color: bgColor, // Add this
-                child: isDesktop 
-                    ? Row(
-                        children: _buildContent(context),
-                      )
-                    : Column(
-                        children: _buildContent(context),
-                      ),
-              ),
-            );
-          },
-        ),
-      ),
-    ),
-  );
-}
 
   List<Widget> _buildContent(BuildContext context) {
-  final isDesktop = MediaQuery.of(context).size.width >= 600;
-  
-  return <Widget>[
-    if (isDesktop)
+    final isDesktop = MediaQuery.of(context).size.width >= 600;
+
+    return <Widget>[
+      if (isDesktop)
+        Flexible(
+          flex: 1,
+          child: Container(
+            color: Colors.white,
+            child: SliderWidget(),
+          ),
+        ),
       Flexible(
         flex: 1,
         child: Container(
-          color: Colors.white,
-          child: SliderWidget(),
-        ),
-      ),
-    Flexible(
-      flex: 1,
-      child: Container(
-        color: bgColor,
-        padding: EdgeInsets.symmetric(
-          horizontal: isDesktop ? 32 : 16,
-          vertical: 16,
-        ),
-        child: Center( // Add Center widget here
-          child: SingleChildScrollView( // Add SingleChildScrollView
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Card(
-                  color: bgColor,
-                  child: Container(
-                    width: isDesktop ? 500 : MediaQuery.of(context).size.width * 0.9, // Adjust width
-                    padding: EdgeInsets.all(32),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.center, // Add this
-                      children: <Widget>[
-                        Image.asset(
-                          "assets/logo/logo_icon.png",
-                          height: 100,
-                          width: 100,
-                        ),
-                        SizedBox(height: 24.0),
-                        AnimatedSwitcher(
-                          duration: Duration(milliseconds: 500),
-                          child: _isMoved
-                              ? _registerScreen(context)
-                              : _loginScreen(context),
-                        ),
-                      ],
+          color: bgColor,
+          padding: EdgeInsets.symmetric(
+            horizontal: isDesktop ? 32 : 16,
+            vertical: 16,
+          ),
+          child: Center(
+            // Add Center widget here
+            child: SingleChildScrollView(
+              // Add SingleChildScrollView
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Card(
+                    color: bgColor,
+                    child: Container(
+                      width: isDesktop
+                          ? 500
+                          : MediaQuery.of(context).size.width *
+                              0.9, // Adjust width
+                      padding: EdgeInsets.all(32),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center, // Add this
+                        children: <Widget>[
+                          Image.asset(
+                            "assets/logo/logo_icon.png",
+                            height: 100,
+                            width: 100,
+                          ),
+                          SizedBox(height: 24.0),
+                          AnimatedSwitcher(
+                            duration: Duration(milliseconds: 500),
+                            child: _isMoved
+                                ? _registerScreen(context)
+                                : _loginScreen(context),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
       ),
-    ),
-  ];
-}
+    ];
+  }
 
   Widget _registerScreen(BuildContext context) {
     return Form(
@@ -300,10 +305,9 @@ Widget build(BuildContext context) {
           RegisterSpecialityWidget(callback: updateSpeciality),
           SizedBox(height: 24.0),
           AppButton(
-            type: ButtonType.PRIMARY,
-            text: "Sign Up",
-            onPressed: _onRegisterPressed
-          ),
+              type: ButtonType.PRIMARY,
+              text: "Sign Up",
+              onPressed: _onRegisterPressed),
           SizedBox(height: 24.0),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -345,10 +349,7 @@ Widget build(BuildContext context) {
                   },
                   child: Text(
                     "Sign In",
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyMedium!
-                        .copyWith(
+                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                           fontWeight: FontWeight.w400,
                           color: greenColor,
                         ),
@@ -401,16 +402,16 @@ Widget build(BuildContext context) {
           Container(
             height: 48,
             child: _isEnabled
-              ? AppButton(
-                  type: ButtonType.PRIMARY,
-                  text: "Sign In",
-                  onPressed: _onLoginPressed,
-                )
-              : Center(
-                  child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(greenColor),
+                ? AppButton(
+                    type: ButtonType.PRIMARY,
+                    text: "Sign In",
+                    onPressed: _onLoginPressed,
+                  )
+                : Center(
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(greenColor),
+                    ),
                   ),
-                ),
           ),
           SizedBox(height: 16.0),
           Row(
@@ -459,10 +460,7 @@ Widget build(BuildContext context) {
                   },
                   child: Text(
                     "Sign up",
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyMedium!
-                        .copyWith(
+                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                           fontWeight: FontWeight.w400,
                           color: greenColor,
                         ),

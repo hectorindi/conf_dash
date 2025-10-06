@@ -17,7 +17,7 @@ class Header extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.menu),
             onPressed: () {
-              Scaffold.of(context).openDrawer(); 
+              Scaffold.of(context).openDrawer();
             },
           ),
         if (!Responsive.isMobile(context))
@@ -38,13 +38,13 @@ class Header extends StatelessWidget {
               ),
             ],
           ),
-        if (!Responsive.isMobile(context)) 
+        if (!Responsive.isMobile(context))
           Spacer(flex: Responsive.isDesktop(context) ? 2 : 1),
         Expanded(child: SearchField()),
-        Expanded(child: SizedBox(
-          height: Responsive.isDesktop(context) ? 100 : 150,
-          child: ProfileCard()
-        ))
+        Expanded(
+            child: SizedBox(
+                height: Responsive.isDesktop(context) ? 100 : 150,
+                child: ProfileCard()))
       ],
     );
   }
