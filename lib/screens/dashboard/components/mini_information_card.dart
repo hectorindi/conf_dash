@@ -3,8 +3,8 @@ import 'package:admin/models/daily_info_model.dart';
 
 import 'package:admin/responsive.dart';
 import 'package:admin/screens/dashboard/components/mini_information_widget.dart';
+import 'package:admin/screens/dashboard/components/chat_widget.dart';
 import 'package:admin/core/utils/Utils.dart';
-import 'package:admin/screens/forms/input_form.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:csv/csv.dart';
@@ -389,24 +389,30 @@ class _MiniInformationState extends State<MiniInformation> {
             SizedBox(
               width: 10,
             ),
-            ElevatedButton.icon(
-              style: TextButton.styleFrom(
-                backgroundColor: Colors.green,
-                padding: EdgeInsets.symmetric(
-                  horizontal: defaultPadding * 1.5,
-                  vertical:
-                      defaultPadding / (Responsive.isMobile(context) ? 2 : 1),
+            Row(
+              children: [
+                ElevatedButton.icon(
+                  style: TextButton.styleFrom(
+                    backgroundColor: Colors.green,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: defaultPadding * 1.5,
+                      vertical:
+                          defaultPadding / (Responsive.isMobile(context) ? 2 : 1),
+                    ),
+                  ),
+                  onPressed: _importCSV,
+                  icon: Icon(Icons.add),
+                  label: Text(
+                    "Import Data",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: Responsive.isMobile(context) ? 10 : 16,
+                    ),
+                  ),
                 ),
-              ),
-              onPressed: _importCSV,
-              icon: Icon(Icons.add),
-              label: Text(
-                "Import Data",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: Responsive.isMobile(context) ? 10 : 16,
-                ),
-              ),
+                SizedBox(width: defaultPadding),
+                ChatWidget(),
+              ],
             ),
           ],
         ),
