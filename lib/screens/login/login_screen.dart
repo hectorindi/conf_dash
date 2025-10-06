@@ -7,6 +7,7 @@ import 'package:admin/screens/home/components/speciality_register_widget.dart';
 import 'package:admin/screens/home/home_screen.dart';
 import 'package:admin/screens/login/components/slider_widget.dart';
 import 'package:admin/data/login_service.dart';
+import 'package:admin/debug_data.dart';
 import 'package:flutter/material.dart';
 import 'dart:developer';
 
@@ -156,6 +157,18 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
 
     return Scaffold(
       backgroundColor: bgColor, // Change this
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => DebugDataScreen(),
+            ),
+          );
+        },
+        child: Icon(Icons.data_usage),
+        tooltip: 'Debug Data',
+      ),
       body: SafeArea(
         child: Container(
           // Add this container

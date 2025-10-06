@@ -240,12 +240,12 @@ class _RecentUsersState extends State<RecentUsers> {
               upperCase: true,
               numberLetters: 1,
               shape: Shape.Rectangle,
-              text: userInfo.name ?? 'N/A',
+              text: (userInfo.name?.isNotEmpty == true) ? userInfo.name! : 'User',
             ),
             SizedBox(width: 8),
             Flexible(
               child: Text(
-                userInfo.name ?? 'N/A',
+                (userInfo.name?.isNotEmpty == true) ? userInfo.name! : 'Unknown User',
                 style: TextStyle(fontSize: 12),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -259,12 +259,12 @@ class _RecentUsersState extends State<RecentUsers> {
           constraints: BoxConstraints(maxWidth: 120),
           padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           decoration: BoxDecoration(
-            color: getRoleColor(userInfo.role).withOpacity(.2),
-            border: Border.all(color: getRoleColor(userInfo.role)),
+            color: getRoleColor(userInfo.role ?? 'General').withOpacity(.2),
+            border: Border.all(color: getRoleColor(userInfo.role ?? 'General')),
             borderRadius: BorderRadius.circular(5.0),
           ),
           child: Text(
-            userInfo.role ?? 'N/A',
+            (userInfo.role?.isNotEmpty == true) ? userInfo.role! : 'General',
             style: TextStyle(fontSize: 10),
             overflow: TextOverflow.ellipsis,
             maxLines: 2,
@@ -276,7 +276,7 @@ class _RecentUsersState extends State<RecentUsers> {
           Container(
             constraints: BoxConstraints(maxWidth: 150),
             child: Text(
-              userInfo.email ?? 'N/A',
+              (userInfo.email?.isNotEmpty == true) ? userInfo.email! : 'No email',
               style: TextStyle(fontSize: 11),
               overflow: TextOverflow.ellipsis,
             ),
@@ -284,13 +284,13 @@ class _RecentUsersState extends State<RecentUsers> {
         ),
         DataCell(
           Text(
-            userInfo.registrationNo ?? 'N/A',
+            (userInfo.registrationNo?.isNotEmpty == true) ? userInfo.registrationNo! : 'N/A',
             style: TextStyle(fontSize: 11, fontWeight: FontWeight.w500),
           ),
         ),
         DataCell(
           Text(
-            userInfo.date ?? 'N/A',
+            (userInfo.date?.isNotEmpty == true) ? userInfo.date! : 'Recent',
             style: TextStyle(fontSize: 11),
           ),
         ),
@@ -298,15 +298,15 @@ class _RecentUsersState extends State<RecentUsers> {
           Container(
             padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
-              color: _getStatusColor(userInfo.posts).withOpacity(.2),
-              border: Border.all(color: _getStatusColor(userInfo.posts)),
+              color: _getStatusColor(userInfo.posts ?? 'Pending').withOpacity(.2),
+              border: Border.all(color: _getStatusColor(userInfo.posts ?? 'Pending')),
               borderRadius: BorderRadius.circular(5.0),
             ),
             child: Text(
-              userInfo.posts ?? 'N/A',
+              (userInfo.posts?.isNotEmpty == true) ? userInfo.posts! : 'Pending',
               style: TextStyle(
                 fontSize: 10,
-                color: _getStatusColor(userInfo.posts),
+                color: _getStatusColor(userInfo.posts ?? 'Pending'),
                 fontWeight: FontWeight.w500,
               ),
             ),
