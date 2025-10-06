@@ -73,7 +73,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
 
       if (loginResult.successful) {
         // Access LoginObject properties
-        print('Welcome ${loginResult.uid}');
+        print('Welcome ${loginResult.name} , UserID is ${loginResult.uid}');
 
         // Navigate to next screen
         //Navigator.pushReplacementNamed(context, '/home');

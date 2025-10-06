@@ -3,6 +3,7 @@ import 'package:admin/responsive.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:admin/screens/home/components/expansion_tile_list.dart';
+import 'package:admin/models/data/logged_user.dart';
 
 class Header extends StatelessWidget {
   const Header({
@@ -26,7 +27,7 @@ class Header extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Hello, Deniz 👋",
+                "Hello, ${LoggedInUser().name} 👋",
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
               SizedBox(
@@ -77,7 +78,7 @@ class ProfileCard extends StatelessWidget {
             child: CustomExpansionTileList(
               elementList: [
                 {
-                  "title": "Deniz Colak",
+                  "title": "${LoggedInUser().name}",
                   "icon": "assets/icons/menu_dashboard.svg",
                   "state": "/Logout",
                   "children": [

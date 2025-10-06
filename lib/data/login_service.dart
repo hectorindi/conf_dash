@@ -2,6 +2,7 @@ import 'package:admin/models/login_object.dart';
 import 'package:admin/models/member_object.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:admin/models/data/logged_user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:admin/data/database_services.dart';
@@ -23,6 +24,9 @@ class AuthService {
         email: email,
         password: password,
       );
+      LoggedInUser loggedInUser = LoggedInUser(); 
+      loggedInUser.updateUser(userCredential.user?.uid ?? '', userCredential.user?.displayName ?? 'Piyush', 'user');
+
       return LoginObject(
           name: userCredential.user?.displayName ?? '',
           successful: true,
