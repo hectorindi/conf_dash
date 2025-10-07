@@ -82,7 +82,7 @@ class _EventRegistrationWidgetState extends State<EventRegistrationWidget> {
                         } else {
                           final List<Map<String, dynamic>> memberData =
                               snapshot.data as List<Map<String, dynamic>>;
-                          return ShowMemberRegistration(memberData: memberData);
+                          return ShowMemberRegistration();
                         }
                       },
                     ),

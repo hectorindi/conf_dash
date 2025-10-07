@@ -12,6 +12,8 @@ class RegistrationService {
       // Try multiple collection paths to find data
       List<String> collectionPaths = [
         'registration-report', // Direct collection
+        'abstract-report',     // Alternative collection
+        'users',              // Fallback collection
       ];
       
       for (String collectionPath in collectionPaths) {

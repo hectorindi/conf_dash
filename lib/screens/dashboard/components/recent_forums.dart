@@ -54,7 +54,7 @@ class _RecentDiscussionsState extends State<RecentDiscussions> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "Recent Open Positions",
+                "Recent Registrations",
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
               Container(

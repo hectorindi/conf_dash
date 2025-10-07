@@ -1,26 +1,62 @@
 import 'package:admin/core/constants/color_constants.dart';
-import 'package:admin/responsive.dart';
+import 'package:admin/core/utils/colorful_tag.dart';
+import 'package:admin/models/member_registration_model.dart';
+import 'package:admin/data/member_registration_service.dart';
+import 'package:colorize_text_avatar/colorize_text_avatar.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 class ShowMemberRegistration extends StatefulWidget {
   const ShowMemberRegistration({
     Key? key,
-    required this.memberData,
-  }) : super(key: key);
 
-  final List<Map<String, dynamic>> memberData;
+  }) : super(key: key);
 
   @override
   State<ShowMemberRegistration> createState() => _ShowMemberRegistrationState();
 }
 
 class _ShowMemberRegistrationState extends State<ShowMemberRegistration> {
-  // ...existing code...
+  List<MemberRegistration> _memberRegistrations = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadMemberRegistrations();
+  }
+
+  Future<void> _loadMemberRegistrations() async {
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+      
+      _memberRegistrations = await MemberRegistrationService.getMemberRegistrationData();
+      
+      setState(() {
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      print('Error loading member registrations: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final Size _size = MediaQuery.of(context).size;
+    final bool isMobile = _size.width < 600;
+    final bool isTablet = _size.width < 1100;
+
     return Container(
+      height: isMobile
+          ? 450
+          : isTablet
+              ? 500
+              : 550, // Responsive height
+      width: double.infinity, // Take full width
       padding: EdgeInsets.all(defaultPadding),
       decoration: BoxDecoration(
         color: secondaryColor,
@@ -29,294 +65,310 @@ class _ShowMemberRegistrationState extends State<ShowMemberRegistration> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Mobile Layout
-          if (Responsive.isMobile(context))
-            ...widget.memberData.map((data) => _buildMobileCard(data)).toList()
-          // Desktop/Tablet Layout
-          else
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  minWidth: MediaQuery.of(context).size.width - 200,
-                ),
-                child: DataTable(
-                  horizontalMargin: 0,
-                  columnSpacing: defaultPadding,
-                  columns: [
-                    DataColumn(label: Text("Name")),
-                    DataColumn(label: Text("Email")),
-                    DataColumn(label: Text("Phone")),
-                    DataColumn(label: Text("Address")),
-                    DataColumn(label: Text("State")),
-                    DataColumn(label: Text("city")),
-                    DataColumn(label: Text("pincode")),
-                    DataColumn(label: Text("Member Type")),
-                    DataColumn(label: Text("Specialization")),
-                    DataColumn(label: Text("Reg ID")),
-                    DataColumn(label: Text("Actions")),
-                  ],
-                  rows: widget.memberData
-                      .map((data) => _buildDataRow(data))
-                      .toList(),
-                ),
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildMobileCard(Map<String, dynamic> memberCategory) {
-    return Container(
-      margin: EdgeInsets.only(bottom: 12),
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.grey.withOpacity(0.3)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Category
           Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              SizedBox(
-                width: 80,
-                child: Text(
-                  "Category:",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey[400],
-                    fontSize: 13,
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: Colors.red,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Text(
-                    memberCategory['category'] ?? 'N/A',
-                    style: TextStyle(
+              Text(
+                "Member Registrations",
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
                       color: Colors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
                     ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
               ),
-            ],
-          ),
-          SizedBox(height: 12),
-
-          // Status
-          Row(
-            children: [
-              SizedBox(
-                width: 80,
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: primaryColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: primaryColor.withOpacity(0.3)),
+                ),
                 child: Text(
-                  "Reg ID:",
+                  "${_memberRegistrations.length} Members",
                   style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey[400],
-                    fontSize: 13,
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: (memberCategory['regID'] ?? 'N/A').toLowerCase() ==
-                            memberCategory['regID']
-                        ? Colors.green
-                        : Colors.orange,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Text(
-                    (memberCategory['regID'] ?? 'N/A').toUpperCase(),
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 12),
-
-          // Created Date
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(
-                width: 80,
-                child: Text(
-                  "Created:",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey[400],
-                    fontSize: 13,
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Text(
-                  _formatTimestamp(memberCategory['createdAt']),
-                  style: TextStyle(
-                    color: Colors.white,
+                    color: primaryColor,
                     fontSize: 12,
+                    fontWeight: FontWeight.w500,
                   ),
-                  maxLines: 2,
                 ),
               ),
             ],
+          ),
+          SizedBox(height: defaultPadding),
+          Expanded(
+            child: _isLoading
+                ? Center(
+                    child: CircularProgressIndicator(
+                      color: primaryColor,
+                    ),
+                  )
+                : _memberRegistrations.isEmpty
+                    ? Center(
+                        child: Text(
+                          "No member registrations available",
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                      )
+                    : Container(
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: bgColor,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: SingleChildScrollView(
+                          child: DataTable(
+                                
+                                horizontalMargin: 8,
+                                columnSpacing: isMobile ? 4 : 12,
+                                headingRowHeight: 45,
+                                dataRowMinHeight: 50,
+                                dataRowMaxHeight: 60,
+                                showCheckboxColumn: false,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              columns: [
+                                DataColumn(
+                                  label: Text(
+                                    "Name",
+                                    style: TextStyle(
+                                      fontSize: isMobile ? 10 : 12,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.white70,
+                                    ),
+                                  ),
+                                ),
+                                DataColumn(
+                                  label: Text(
+                                    "Category",
+                                    style: TextStyle(
+                                      fontSize: isMobile ? 10 : 12,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.white70,
+                                    ),
+                                  ),
+                                ),
+                                if (!isMobile) ...[
+                                  DataColumn(
+                                    label: Text(
+                                      "E-mail",
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.white70,
+                                      ),
+                                    ),
+                                  ),
+                                  DataColumn(
+                                    label: Text(
+                                      "Phone",
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.white70,
+                                      ),
+                                    ),
+                                  ),
+                                  DataColumn(
+                                    label: Text(
+                                      "City",
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.white70,
+                                      ),
+                                    ),
+                                  ),
+                                  DataColumn(
+                                    label: Text(
+                                      "Reg. ID",
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.white70,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                                DataColumn(
+                                  label: Text(
+                                    "Status",
+                                    style: TextStyle(
+                                      fontSize: isMobile ? 10 : 12,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.white70,
+                                    ),
+                                  ),
+                                ),
+                                DataColumn(
+                                  label: Text(
+                                    "Action",
+                                    style: TextStyle(
+                                      fontSize: isMobile ? 10 : 12,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.white70,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                              rows: List.generate(
+                                _memberRegistrations.length,
+                                (index) => _buildDataRow(
+                                    _memberRegistrations[index],
+                                    context,
+                                    isMobile),
+                              ),
+                            ),
+                        ),
+                      ),
           ),
         ],
       ),
     );
   }
 
-  DataRow _buildDataRow(Map<String, dynamic> data) {
-    return DataRow(
-      cells: [
-        DataCell(Text(data['name'] ?? 'N/A')),
-        DataCell(Text((data['emailMobile'] != null)
-            ? (data['emailMobile'].toString().split("/")[0])
-            : 'N/A')),
-        DataCell(Text((data['emailMobile'] != null)
-            ? (data['emailMobile'].toString().split("/")[1])
-            : 'N/A')),
-        DataCell(Text(data['address'] ?? 'N/A')),
-        DataCell(Text((data['city_state_pincode'] != null)
-            ? (data['city_state_pincode'].toString().split("_")[1])
-            : 'N/A')),
-        DataCell(Text((data['city_state_pincode'] != null)
-            ? (data['city_state_pincode'].toString().split("_")[0])
-            : 'N/A')),
-        DataCell(Text((data['city_state_pincode'] != null)
-            ? (data['city_state_pincode'].toString().split("_")[2])
-            : 'N/A')),
-        DataCell(
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: Colors.blue.withOpacity(0.2),
-              border: Border.all(color: const Color.fromARGB(255, 223, 98, 14)),
-              borderRadius: BorderRadius.circular(4),
+  DataRow _buildDataRow(MemberRegistration memberInfo, BuildContext context, bool isMobile) {
+    return DataRow(cells: [
+      DataCell(
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextAvatar(
+              size: isMobile ? 24 : 28,
+              backgroundColor: Colors.white,
+              textColor: Colors.white,
+              fontSize: 10,
+              upperCase: true,
+              numberLetters: 1,
+              shape: Shape.Rectangle,
+              text: memberInfo.name == null ? memberInfo.name : 'User',
             ),
-            child: Text(
-              data['memberCategory'] ?? 'N/A',
-              style: TextStyle(fontSize: 11),
-            ),
-          ),
-        ),
-        DataCell(
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: Colors.blue.withOpacity(0.2),
-              border: Border.all(color: Colors.blue),
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Text(
-              data['specialization']['name'] ?? 'N/A',
-              style: TextStyle(fontSize: 11),
-            ),
-          ),
-        ),
-        DataCell(
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: (data['regID'] == data['regID']
-                      ? Colors.green
-                      : Colors.orange)
-                  .withOpacity(0.2),
-              border: Border.all(
-                  color: data['regID'] == data['regID']
-                      ? Colors.green
-                      : Colors.orange),
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Text(
-              (data['regID'] ?? 'N/A').toUpperCase(),
-              style: TextStyle(fontSize: 11),
-            ),
-          ),
-        ),
-        DataCell(
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              IconButton(
-                iconSize: 20,
-                icon: Icon(Icons.edit, color: Colors.blue),
-                onPressed: () {},
+            SizedBox(width: 6),
+            Flexible(
+              child: Text(
+                ((memberInfo.name == null) ? memberInfo.name : memberInfo.name) ?? 'Unknown User',
+                style: TextStyle(fontSize: isMobile ? 10 : 11),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
-              IconButton(
-                iconSize: 20,
-                icon: Icon(Icons.delete, color: Colors.red),
-                onPressed: () {},
-              ),
-            ],
+            ),
+          ],
+        ),
+      ),
+      DataCell(
+        Container(
+          constraints: BoxConstraints(maxWidth: isMobile ? 80 : 100),
+          padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+          decoration: BoxDecoration(
+            color: getRoleColor(memberInfo.memberCategory ?? 'General').withOpacity(.2),
+            border: Border.all(color: getRoleColor(memberInfo.memberCategory ?? 'General')),
+            borderRadius: BorderRadius.circular(4.0),
+          ),
+          child: Text(
+            (memberInfo.memberCategory?.isNotEmpty == true) ? memberInfo.memberCategory! : 'General',
+            style: TextStyle(fontSize: 9),
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
+          ),
+        ),
+      ),
+      if (!isMobile) ...[
+        DataCell(
+          Container(
+            constraints: BoxConstraints(maxWidth: 120),
+            child: Text(
+              (memberInfo.email?.isNotEmpty == true) ? memberInfo.email! : 'No email',
+              style: TextStyle(fontSize: 10),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ),
+        DataCell(
+          Text(
+            (memberInfo.phone?.isNotEmpty == true) ? memberInfo.phone! : 'N/A',
+            style: TextStyle(fontSize: 10, fontWeight: FontWeight.w500),
+          ),
+        ),
+        DataCell(
+          Text(
+            (memberInfo.city?.isNotEmpty == true) ? memberInfo.city! : 'N/A',
+            style: TextStyle(fontSize: 10),
+          ),
+        ),
+        DataCell(
+          Text(
+            (memberInfo.registrationId?.isNotEmpty == true) ? memberInfo.registrationId! : 'N/A',
+            style: TextStyle(fontSize: 10, fontWeight: FontWeight.w500),
           ),
         ),
       ],
-    );
+      DataCell(
+        Container(
+          constraints: BoxConstraints(maxWidth: isMobile ? 70 : 80),
+          padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+          decoration: BoxDecoration(
+            color: _getStatusColor(memberInfo.paymentStatus ?? 'Pending').withOpacity(.2),
+            border: Border.all(color: _getStatusColor(memberInfo.paymentStatus ?? 'Pending')),
+            borderRadius: BorderRadius.circular(4.0),
+          ),
+          child: Text(
+            (memberInfo.paymentStatus?.isNotEmpty == true) ? memberInfo.paymentStatus! : 'Pending',
+            style: TextStyle(
+              fontSize: 9,
+              color: _getStatusColor(memberInfo.paymentStatus ?? 'Pending'),
+              fontWeight: FontWeight.w500,
+            ),
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ),
+      DataCell(
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextButton(
+              style: TextButton.styleFrom(
+                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                minimumSize: Size(0, 0),
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
+              child: Text(
+                'View',
+                style: TextStyle(color: greenColor, fontSize: isMobile ? 9 : 10),
+              ),
+              onPressed: () {},
+            ),
+            if (!isMobile) ...[
+              SizedBox(width: 2),
+              TextButton(
+                style: TextButton.styleFrom(
+                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  minimumSize: Size(0, 0),
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                child: Text(
+                  "Delete",
+                  style: TextStyle(color: Colors.redAccent, fontSize: 10),
+                ),
+                onPressed: () => {} //_showDeleteDialog(context, memberInfo),
+              ),
+            ],
+          ],
+        ),
+      ),
+    ]);
   }
 
-  String _formatTimestamp(dynamic timestamp) {
-    if (timestamp == null) return 'N/A';
-
-    try {
-      DateTime? dateTime;
-
-      // If it's already a DateTime
-      if (timestamp is DateTime) {
-        dateTime = timestamp;
-      }
-      // If it's a Timestamp object (Firestore)
-      else if (timestamp.toString().contains('Timestamp')) {
-        // Extract seconds from the string format
-        String timestampStr = timestamp.toString();
-        RegExp regExp = RegExp(r'seconds=(\d+)');
-        Match? match = regExp.firstMatch(timestampStr);
-
-        if (match != null) {
-          int seconds = int.parse(match.group(1)!);
-          dateTime = DateTime.fromMillisecondsSinceEpoch(seconds * 1000);
-        }
-      }
-      // If it's a string, try to parse it
-      else if (timestamp is String) {
-        dateTime = DateTime.tryParse(timestamp);
-      }
-      // If it's an integer (milliseconds or seconds)
-      else if (timestamp is int) {
-        dateTime = timestamp > 1000000000000
-            ? DateTime.fromMillisecondsSinceEpoch(timestamp)
-            : DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
-      }
-
-      if (dateTime != null) {
-        // Format as "Sep 19, 2025 14:30"
-        return DateFormat('MMM dd, yyyy HH:mm').format(dateTime);
-      }
-
-      return timestamp.toString();
-    } catch (e) {
-      return 'Invalid Date';
+  Color _getStatusColor(String? status) {
+    if (status == null) return Colors.grey;
+    switch (status.toLowerCase()) {
+      case 'paid':
+        return Colors.green;
+      case 'offline':
+        return Colors.orange;
+      case 'pending':
+        return Colors.yellow[700]!;
+      default:
+        return Colors.grey;
     }
   }
 }
