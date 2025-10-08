@@ -43,10 +43,36 @@ class InformationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return FutureBuilder<List<TotalRegistrationInfoModel>>(
+      future: getDailyDatas(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Container(
+            height: 200,
+            child: Center(
+              child: CircularProgressIndicator(color: primaryColor),
+            ),
+          );
+        }
+        
+        if (snapshot.hasError) {
+          print('Error loading daily data: ${snapshot.error}');
+          // Use static data as fallback
+          final fallbackData = getStaticDailyDatas();
+          return _buildGrid(fallbackData);
+        }
+        
+        final data = snapshot.data ?? getStaticDailyDatas();
+        return _buildGrid(data);
+      },
+    );
+  }
+  
+  Widget _buildGrid(List<TotalRegistrationInfoModel> data) {
     return GridView.builder(
       physics: NeverScrollableScrollPhysics(),
       shrinkWrap: true,
-      itemCount: dailyDatas.length,
+      itemCount: data.length,
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: crossAxisCount,
         crossAxisSpacing: defaultPadding,
@@ -54,7 +80,7 @@ class InformationCard extends StatelessWidget {
         childAspectRatio: childAspectRatio,
       ),
       itemBuilder: (context, index) =>
-          MiniInformationWidget(dailyData: dailyDatas[index]),
+          MiniInformationWidget(dailyData: data[index]),
     );
   }
 }

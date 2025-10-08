@@ -3,6 +3,7 @@ import 'package:admin/core/constants/color_constants.dart';
 import 'package:admin/responsive.dart';
 import 'package:firebase_ai/firebase_ai.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:convert';
 
 class ChatWidget extends StatefulWidget {
   const ChatWidget({Key? key}) : super(key: key);
@@ -302,7 +303,7 @@ class _ChatPopupState extends State<ChatPopup> with TickerProviderStateMixin {
       for (String collection in collectionsToQuery) {
         final snapshot = await FirebaseFirestore.instance
             .collection(collection)
-            .limit(50) // Increased limit for better cross-analysis
+            .limit(100) // Increased limit for comprehensive AI analysis
             .get();
 
         if (snapshot.docs.isNotEmpty) {
@@ -328,20 +329,59 @@ class _ChatPopupState extends State<ChatPopup> with TickerProviderStateMixin {
 
   String _analyzeCollection(
       String collectionName, List<QueryDocumentSnapshot> docs) {
-    final analysis = StringBuffer();
-    analysis.writeln('=== $collectionName Analysis ===');
-    analysis.writeln('Total Records: ${docs.length}');
-
-    if (collectionName == 'faculty-report') {
-      _analyzeFacultyData(docs, analysis);
-    } else if (collectionName == 'abstract-report') {
-      _analyzeAbstractData(docs, analysis);
-    } else if (collectionName == 'registration-report') {
-      _analyzeRegistrationData(docs, analysis);
+    final jsonData = StringBuffer();
+    jsonData.writeln('=== $collectionName Collection Data (${docs.length} documents) ===');
+    
+    // Convert all documents to JSON format
+    final List<Map<String, dynamic>> documentsJson = [];
+    
+    for (var doc in docs) {
+      final data = doc.data() as Map<String, dynamic>;
+      // Add document ID to the data
+      final docWithId = Map<String, dynamic>.from(data);
+      docWithId['_documentId'] = doc.id;
+      documentsJson.add(docWithId);
+    }
+    
+    // Convert to formatted JSON string
+    try {
+      jsonData.writeln('COLLECTION_JSON_START');
+      jsonData.writeln('Collection: $collectionName');
+      jsonData.writeln('Total Documents: ${docs.length}');
+      
+      // Use proper JSON encoding for better structure
+      final jsonString = jsonEncode({
+        'collection': collectionName,
+        'totalDocuments': docs.length,
+        'documents': documentsJson
+      });
+      
+      jsonData.writeln('JSON_DATA:');
+      jsonData.writeln(jsonString);
+      jsonData.writeln('COLLECTION_JSON_END');
+    } catch (e) {
+      jsonData.writeln('Error serializing collection data: $e');
+      // Fallback: provide structured data without JSON encoding
+      jsonData.writeln('COLLECTION_JSON_START');
+      jsonData.writeln('Collection: $collectionName');
+      jsonData.writeln('Total Documents: ${docs.length}');
+      jsonData.writeln('Documents:');
+      
+      for (int i = 0; i < documentsJson.length; i++) {
+        jsonData.writeln('Document ${i + 1}:');
+        final doc = documentsJson[i];
+        doc.forEach((key, value) {
+          // Clean up the value for better readability
+          final cleanValue = value?.toString().replaceAll('\n', ' ').replaceAll('\r', '') ?? 'null';
+          jsonData.writeln('  $key: $cleanValue');
+        });
+        jsonData.writeln('---');
+      }
+      jsonData.writeln('COLLECTION_JSON_END');
     }
 
-    print(analysis);
-    return analysis.toString();
+    print(jsonData);
+    return jsonData.toString();
   }
 
   String _performCrossAnalysis(
@@ -594,218 +634,53 @@ class _ChatPopupState extends State<ChatPopup> with TickerProviderStateMixin {
     return analysis.toString();
   }
 
-  void _analyzeFacultyData(
-      List<QueryDocumentSnapshot> docs, StringBuffer analysis) {
-    Map<String, int> institutions = {};
-    Map<String, int> designations = {};
-    Map<String, int> cities = {};
-    Map<String, List<String>> institutionFaculty = {};
-
-    for (var doc in docs) {
-      final data = doc.data() as Map<String, dynamic>;
-
-      // Count institutions
-      final institution = data['Institution']?.toString() ?? 'Unknown';
-      institutions[institution] = (institutions[institution] ?? 0) + 1;
-
-      // Count designations
-      final designation = data['Designation']?.toString() ?? 'Unknown';
-      designations[designation] = (designations[designation] ?? 0) + 1;
-
-      // Count cities
-      final city = data['City']?.toString() ?? 'Unknown';
-      cities[city] = (cities[city] ?? 0) + 1;
-
-      // Track faculty names by institution
-      final facultyName = data['Name']?.toString() ??
-          data['First Name']?.toString() ??
-          'Unknown';
-      if (!institutionFaculty.containsKey(institution)) {
-        institutionFaculty[institution] = [];
-      }
-      institutionFaculty[institution]!.add('$facultyName ($designation)');
-    }
-
-    analysis.writeln('Top Institutions:');
-    institutions.entries.take(8).forEach((entry) {
-      analysis.writeln('- ${entry.key}: ${entry.value} faculty');
-    });
-
-    analysis.writeln('Faculty Designations:');
-    designations.entries.take(5).forEach((entry) {
-      analysis.writeln('- ${entry.key}: ${entry.value}');
-    });
-
-    analysis.writeln('Faculty by Cities:');
-    cities.entries.take(8).forEach((entry) {
-      analysis.writeln('- ${entry.key}: ${entry.value} faculty');
-    });
-
-    // Show detailed faculty breakdown for top institutions
-    analysis.writeln('Faculty Details for Top Institutions:');
-    final topInstitutions = institutions.entries.toList()
-      ..sort((a, b) => b.value.compareTo(a.value));
-
-    for (var institution in topInstitutions.take(3)) {
-      analysis.writeln('${institution.key}:');
-      final faculty = institutionFaculty[institution.key] ?? [];
-      for (var member in faculty.take(3)) {
-        analysis.writeln('  - $member');
-      }
-      if (faculty.length > 3) {
-        analysis.writeln('  - ... and ${faculty.length - 3} more');
-      }
-    }
-  }
-
-  void _analyzeAbstractData(
-      List<QueryDocumentSnapshot> docs, StringBuffer analysis) {
-    Map<String, int> topics = {};
-    Map<String, List<String>> authorPapers = {};
-    List<String> synopses = [];
-    int totalAuthors = 0;
-
-    for (var doc in docs) {
-      final data = doc.data() as Map<String, dynamic>;
-
-      // Collect Abstract Synopsis for detailed insights
-      final synopsis = data['Abstract Synopsis']?.toString() ?? '';
-      if (synopsis.isNotEmpty && synopsis.length > 50) {
-        synopses.add(synopsis.substring(0, 100) + '...');
-      }
-
-      // Analyze paper topics/titles
-      final title = data['Paper Title']?.toString() ?? '';
-      if (title.isNotEmpty) {
-        // Simple keyword extraction
-        final keywords = title.toLowerCase().split(' ');
-        for (String keyword in keywords) {
-          if (keyword.length > 4) {
-            topics[keyword] = (topics[keyword] ?? 0) + 1;
-          }
-        }
-      }
-
-      // Track papers by author email
-      final authorEmail = data['Email']?.toString() ?? '';
-      if (authorEmail.isNotEmpty && title.isNotEmpty) {
-        if (!authorPapers.containsKey(authorEmail)) {
-          authorPapers[authorEmail] = [];
-        }
-        authorPapers[authorEmail]!.add(title);
-      }
-
-      // Count co-authors
-      for (int i = 1; i <= 4; i++) {
-        if (data['Co-Authors Name $i']?.toString().isNotEmpty == true) {
-          totalAuthors++;
-        }
-      }
-    }
-
-    analysis.writeln(
-        'Average Co-authors per Paper: ${(totalAuthors / docs.length).toStringAsFixed(1)}');
-
-    analysis.writeln('Common Research Keywords:');
-    topics.entries.take(8).forEach((entry) {
-      analysis.writeln('- ${entry.key}: ${entry.value} papers');
-    });
-
-    // Authors with multiple papers
-    final multiPaperAuthors =
-        authorPapers.entries.where((e) => e.value.length > 1);
-    if (multiPaperAuthors.isNotEmpty) {
-      analysis.writeln('Authors with Multiple Papers:');
-      for (var entry in multiPaperAuthors.take(5)) {
-        analysis.writeln('- ${entry.key}: ${entry.value.length} papers');
-      }
-    }
-
-    // Sample synopses for insights
-    if (synopses.isNotEmpty) {
-      analysis.writeln('Sample Abstract Synopses:');
-      for (var synopsis in synopses.take(3)) {
-        analysis.writeln('- $synopsis');
-      }
-    }
-  }
-
-  void _analyzeRegistrationData(
-      List<QueryDocumentSnapshot> docs, StringBuffer analysis) {
-    Map<String, int> categories = {};
-    Map<String, int> institutions = {};
-    Map<String, int> cities = {};
-    Map<String, int> paymentStatus = {};
-
-    for (var doc in docs) {
-      final data = doc.data() as Map<String, dynamic>;
-
-      // Count member categories
-      final category = data['Member Category']?.toString() ?? 'Unknown';
-      categories[category] = (categories[category] ?? 0) + 1;
-
-      // Count institutions
-      final institution =
-          data['Institution / College / University']?.toString() ?? 'Unknown';
-      institutions[institution] = (institutions[institution] ?? 0) + 1;
-
-      // Count cities
-      final city = data['City']?.toString() ?? 'Unknown';
-      cities[city] = (cities[city] ?? 0) + 1;
-
-      // Count payment status
-      final payment = data['Payment Status']?.toString() ??
-          data['Payment']?.toString() ??
-          data['Paid']?.toString() ??
-          data['Fee Status']?.toString() ??
-          'Unknown';
-      paymentStatus[payment] = (paymentStatus[payment] ?? 0) + 1;
-    }
-
-    analysis.writeln('Registration Categories:');
-    categories.entries.take(5).forEach((entry) {
-      analysis.writeln('- ${entry.key}: ${entry.value}');
-    });
-
-    analysis.writeln('Top Institutions by Registration:');
-    institutions.entries.take(5).forEach((entry) {
-      analysis.writeln('- ${entry.key}: ${entry.value}');
-    });
-
-    analysis.writeln('Top Cities by Registration:');
-    cities.entries.take(8).forEach((entry) {
-      analysis.writeln('- ${entry.key}: ${entry.value}');
-    });
-
-    analysis.writeln('Payment Status Distribution:');
-    paymentStatus.entries.forEach((entry) {
-      analysis.writeln('- ${entry.key}: ${entry.value}');
-    });
-  }
-
   String _createEnhancedPrompt(String userMessage, String databaseContext) {
     return '''
-You are an AI assistant for an academic conference admin dashboard with access to real-time database information.
+You are an AI assistant for an academic conference admin dashboard with access to real-time database information in JSON format.
 
-DATABASE CONTEXT:
+DATABASE CONTEXT (JSON Format):
 $databaseContext
 
 USER QUESTION: $userMessage
 
 INSTRUCTIONS:
-1. Base your response ONLY on the provided database context
-2. Provide specific statistics and insights from the actual data
-3. Check data columns for relevant information like Abstract Synopsis is from the abstract-report database and you can read these or provide similar insights.
-4. Check data columns amd check cross tables/report for the same email id and connect like how many topics for the same email or Name.
-5. Check data columns like how many memeber from the same institution or college and provide insights
-6. Check data columns like how many memeber from the same City and provide insights
-7. Check data columns like for how many menebers are paid or unpaid.
-8. If the question is about data not available in the context, clearly state this
-9. Format your response clearly with bullet points and numbers where appropriate
-10. Be concise but informative
-11. Focus on actionable insights from the database
+1. Base your response ONLY on the provided JSON database context above
+2. Parse the JSON data provided between COLLECTION_JSON_START and COLLECTION_JSON_END markers
+3. Look for JSON_DATA sections that contain properly formatted JSON with collection details
+4. Analyze all document fields and provide specific statistics and insights from the actual JSON data
+5. For cross-analysis, look for common values in fields like:
+   - Email addresses (to find the same person across multiple collections)
+   - Institution names (to find institutional participation patterns)
+   - City names (for geographic analysis)
+   - Names (First Name, Name fields)
 
-Please provide a data-driven response based on the database context above.
+6. Available collections and their typical fields:
+   - faculty-report: Name, Institution, Designation, City, Email, Phone
+   - abstract-report: Paper Title, Abstract Synopsis, Email, Co-Authors Name 1-4, Institution
+   - registration-report: Name, Member Category, Institution/College/University, City, Payment Status, Email
+
+7. Perform comprehensive analysis including:
+   - Count total participants per collection
+   - Cross-reference emails to identify multi-active participants
+   - Institution-wise breakdown across all collections
+   - City-wise participation distribution
+   - Payment status analysis (paid/unpaid/pending)
+   - Research topics and abstract analysis
+   - Multi-paper authors identification
+
+8. Always provide specific numbers, counts, and percentages
+9. Format responses with clear bullet points and organized sections
+10. Include actionable insights and trends from the data
+11. If data is not available for a specific question, clearly state this
+
+RESPONSE FORMAT:
+Structure your response as:
+📊 **Data Summary**
+🔍 **Key Findings** 
+📈 **Statistics & Numbers**
+💡 **Insights & Recommendations**
+
+Please analyze the complete JSON dataset and provide comprehensive insights.
     ''';
   }
 
