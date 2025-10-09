@@ -301,10 +301,8 @@ class _ChatPopupState extends State<ChatPopup> with TickerProviderStateMixin {
       Map<String, List<QueryDocumentSnapshot>> allCollectionData = {};
 
       for (String collection in collectionsToQuery) {
-        final snapshot = await FirebaseFirestore.instance
-            .collection(collection)
-            .limit(100) // Increased limit for comprehensive AI analysis
-            .get();
+        final snapshot =
+            await FirebaseFirestore.instance.collection(collection).get();
 
         if (snapshot.docs.isNotEmpty) {
           allCollectionData[collection] = snapshot.docs;
@@ -330,11 +328,12 @@ class _ChatPopupState extends State<ChatPopup> with TickerProviderStateMixin {
   String _analyzeCollection(
       String collectionName, List<QueryDocumentSnapshot> docs) {
     final jsonData = StringBuffer();
-    jsonData.writeln('=== $collectionName Collection Data (${docs.length} documents) ===');
-    
+    jsonData.writeln(
+        '=== $collectionName Collection Data (${docs.length} documents) ===');
+
     // Convert all documents to JSON format
     final List<Map<String, dynamic>> documentsJson = [];
-    
+
     for (var doc in docs) {
       final data = doc.data() as Map<String, dynamic>;
       // Add document ID to the data
@@ -342,20 +341,20 @@ class _ChatPopupState extends State<ChatPopup> with TickerProviderStateMixin {
       docWithId['_documentId'] = doc.id;
       documentsJson.add(docWithId);
     }
-    
+
     // Convert to formatted JSON string
     try {
       jsonData.writeln('COLLECTION_JSON_START');
       jsonData.writeln('Collection: $collectionName');
       jsonData.writeln('Total Documents: ${docs.length}');
-      
+
       // Use proper JSON encoding for better structure
       final jsonString = jsonEncode({
         'collection': collectionName,
         'totalDocuments': docs.length,
         'documents': documentsJson
       });
-      
+
       jsonData.writeln('JSON_DATA:');
       jsonData.writeln(jsonString);
       jsonData.writeln('COLLECTION_JSON_END');
@@ -366,13 +365,15 @@ class _ChatPopupState extends State<ChatPopup> with TickerProviderStateMixin {
       jsonData.writeln('Collection: $collectionName');
       jsonData.writeln('Total Documents: ${docs.length}');
       jsonData.writeln('Documents:');
-      
+
       for (int i = 0; i < documentsJson.length; i++) {
         jsonData.writeln('Document ${i + 1}:');
         final doc = documentsJson[i];
         doc.forEach((key, value) {
           // Clean up the value for better readability
-          final cleanValue = value?.toString().replaceAll('\n', ' ').replaceAll('\r', '') ?? 'null';
+          final cleanValue =
+              value?.toString().replaceAll('\n', ' ').replaceAll('\r', '') ??
+                  'null';
           jsonData.writeln('  $key: $cleanValue');
         });
         jsonData.writeln('---');
@@ -636,51 +637,31 @@ class _ChatPopupState extends State<ChatPopup> with TickerProviderStateMixin {
 
   String _createEnhancedPrompt(String userMessage, String databaseContext) {
     return '''
-You are an AI assistant for an academic conference admin dashboard with access to real-time database information in JSON format.
+    You are a data analysis assistant. You will be given a database in text-formatted JSON containing details about doctor's conferences. Each record may include data such as conference event name, date, location, topics covered, doctors’ names, their specializations, and whether the conference fee has been paid or not.
 
-DATABASE CONTEXT (JSON Format):
-$databaseContext
 
-USER QUESTION: $userMessage
+    Your task is to answer when asked to identify patterns and trends in the dataset, such as:
 
-INSTRUCTIONS:
-1. Base your response ONLY on the provided JSON database context above
-2. Parse the JSON data provided between COLLECTION_JSON_START and COLLECTION_JSON_END markers
-3. Look for JSON_DATA sections that contain properly formatted JSON with collection details
-4. Analyze all document fields and provide specific statistics and insights from the actual JSON data
-5. For cross-analysis, look for common values in fields like:
-   - Email addresses (to find the same person across multiple collections)
-   - Institution names (to find institutional participation patterns)
-   - City names (for geographic analysis)
-   - Names (First Name, Name fields)
+    - if asked, Most common conference topics.
 
-6. Available collections and their typical fields:
-   - faculty-report: Name, Institution, Designation, City, Email, Phone
-   - abstract-report: Paper Title, Abstract Synopsis, Email, Co-Authors Name 1-4, Institution
-   - registration-report: Name, Member Category, Institution/College/University, City, Payment Status, Email
+    - if asked, Specializations that attend conferences most often.
 
-7. Perform comprehensive analysis including:
-   - Count total participants per collection
-   - Cross-reference emails to identify multi-active participants
-   - Institution-wise breakdown across all collections
-   - City-wise participation distribution
-   - Payment status analysis (paid/unpaid/pending)
-   - Research topics and abstract analysis
-   - Multi-paper authors identification
+    - if asked, Frequency of fee payment vs. non-payment.
 
-8. Always provide specific numbers, counts, and percentages
-9. Format responses with clear bullet points and organized sections
-10. Include actionable insights and trends from the data
-11. If data is not available for a specific question, clearly state this
+    - if asked, Common cities or venues for conferences.
 
-RESPONSE FORMAT:
-Structure your response as:
-📊 **Data Summary**
-🔍 **Key Findings** 
-📈 **Statistics & Numbers**
-💡 **Insights & Recommendations**
+    - if asked, Peak months or seasons for events.
 
-Please analyze the complete JSON dataset and provide comprehensive insights.
+    - if asked, Highlight correlations, such as whether certain topics or locations are linked with higher fee payment rates or attendance from specific doctor specializations.
+
+    when answering, Do not go  keep the answer consise and to the point, focusing on simple statistics and trends. Do not go into detail about individual records unless specifically asked.
+
+    pick question only from this line of context $userMessage
+
+    If applicable, recommend actions or opportunities based on these insights (e.g., which specializations to target for future events).
+
+    Here is the JSON data to analyze:
+    $databaseContext
     ''';
   }
 
