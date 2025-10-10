@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:admin/core/constants/color_constants.dart';
+import 'package:admin/core/constants/string_constants.dart';
+import 'package:admin/core/constants/style_constants.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:html' as html;
 import 'chat_models.dart';
@@ -21,18 +23,15 @@ class ChatMessageWidget extends StatelessWidget {
           if (!message.isUser) ...[
             CircleAvatar(
               backgroundColor: primaryColor,
-              radius: 16,
-              child: Icon(Icons.support_agent, color: Colors.white, size: 16),
+              radius: StyleConstants.smallAvatarRadius,
+              child: Icon(Icons.support_agent, color: Colors.white, size: StyleConstants.smallIconSize),
             ),
             SizedBox(width: 8),
           ],
           Flexible(
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: BoxDecoration(
-                color: message.isUser ? primaryColor : bgColor,
-                borderRadius: BorderRadius.circular(15),
-              ),
+              padding: StyleConstants.chatContainerPadding,
+              decoration: message.isUser ? StyleConstants.messageUserDecoration : StyleConstants.messageAiDecoration,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -64,7 +63,7 @@ class ChatMessageWidget extends StatelessWidget {
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                content: Text('✅ Professional medical headshot generated successfully!'),
+                                content: Text(StringConstants.headshotGeneratedSuccess),
                                 backgroundColor: greenColor,
                               ),
                             );
@@ -72,30 +71,21 @@ class ChatMessageWidget extends StatelessWidget {
                         },
                         icon: Icon(Icons.download, color: Colors.white),
                         label: Text(
-                          'Download Professional Headshot',
-                          style: TextStyle(color: Colors.white),
+                          StringConstants.downloadButtonText,
+                          style: StyleConstants.whiteText,
                         ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: greenColor,
-                          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        ),
+                        style: StyleConstants.greenElevatedButtonStyle,
                       ),
                     ),
                   ],
                   Text(
                     message.text,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                    ),
+                    style: StyleConstants.chatMessageText,
                   ),
                   SizedBox(height: 4),
                   Text(
                     "${message.timestamp.hour.toString().padLeft(2, '0')}:${message.timestamp.minute.toString().padLeft(2, '0')}",
-                    style: TextStyle(
-                      color: Colors.white70,
-                      fontSize: 10,
-                    ),
+                    style: StyleConstants.chatTimestampText,
                   ),
                 ],
               ),
@@ -118,7 +108,7 @@ class ChatMessageWidget extends StatelessWidget {
 class TypingIndicator extends StatefulWidget {
   final String message;
 
-  const TypingIndicator({Key? key, this.message = "AI is typing..."}) : super(key: key);
+  const TypingIndicator({Key? key, this.message = StringConstants.aiTyping}) : super(key: key);
 
   @override
   _TypingIndicatorState createState() => _TypingIndicatorState();
@@ -153,8 +143,8 @@ class _TypingIndicatorState extends State<TypingIndicator>
         children: [
           CircleAvatar(
             backgroundColor: primaryColor,
-            radius: 12,
-            child: Icon(Icons.support_agent, color: Colors.white, size: 10),
+            radius: StyleConstants.smallAvatarRadius,
+            child: Icon(Icons.support_agent, color: Colors.white, size: StyleConstants.smallIconSize),
           ),
           SizedBox(width: 8),
           Container(

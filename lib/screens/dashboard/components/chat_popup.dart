@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:admin/core/constants/color_constants.dart';
+import 'package:admin/core/constants/string_constants.dart';
+import 'package:admin/core/constants/style_constants.dart';
 import 'package:admin/responsive.dart';
 import 'package:firebase_ai/firebase_ai.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -33,18 +35,17 @@ class _ChatPopupState extends State<ChatPopup> with TickerProviderStateMixin {
 
   List<ChatMessage> _messages = [
     ChatMessage(
-      text: "Hello! I'm your conference database AI assistant.",
+      text: StringConstants.chatWelcome,
       isUser: false,
       timestamp: DateTime.now().subtract(Duration(minutes: 5)),
     ),
     ChatMessage(
-      text:
-          "I can analyze your faculty-report, abstract-report, and registration-report data to provide real-time insights. What would you like to know?",
+      text: StringConstants.chatCapabilities,
       isUser: false,
       timestamp: DateTime.now().subtract(Duration(minutes: 4)),
     ),
     ChatMessage(
-      text: "🖼️ **New Feature**: Upload your photo and I'll create a professional medical headshot! Complete with doctor's coat, stethoscope, and medical office background.",
+      text: StringConstants.chatNewFeature,
       isUser: false,
       timestamp: DateTime.now().subtract(Duration(minutes: 3)),
     ),
@@ -94,11 +95,11 @@ class _ChatPopupState extends State<ChatPopup> with TickerProviderStateMixin {
           .collection('registration-report')
           .get();
 
-      final summary = "📊 **Database Overview:**\n"
-          "• Faculty Records: ${facultyCount.docs.length}\n"
-          "• Abstract Submissions: ${abstractCount.docs.length}\n"
-          "• Total Registrations: ${registrationCount.docs.length}\n\n"
-          "Ask me anything about this data!";
+      final summary = "${StringConstants.databaseOverview}\n"
+          "${StringConstants.facultyRecords}${facultyCount.docs.length}\n"
+          "${StringConstants.abstractSubmissions}${abstractCount.docs.length}\n"
+          "${StringConstants.totalRegistrations}${registrationCount.docs.length}\n\n"
+          "${StringConstants.askAnything}";
 
       if (mounted) {
         setState(() {
@@ -162,7 +163,7 @@ class _ChatPopupState extends State<ChatPopup> with TickerProviderStateMixin {
       // Add user message showing they uploaded an image
       setState(() {
         _messages.add(ChatMessage(
-          text: "📸 I've uploaded my photo for professional medical headshot generation",
+          text: StringConstants.imageUploadMessage,
           isUser: true,
           timestamp: DateTime.now(),
           hasImage: true,
@@ -179,7 +180,7 @@ class _ChatPopupState extends State<ChatPopup> with TickerProviderStateMixin {
       setState(() {
         _isImageProcessing = false;
         _messages.add(ChatMessage(
-          text: "❌ Sorry, there was an error processing your image. Please try again.",
+          text: StringConstants.imageProcessingError,
           isUser: false,
           timestamp: DateTime.now(),
         ));
@@ -217,20 +218,20 @@ class _ChatPopupState extends State<ChatPopup> with TickerProviderStateMixin {
         return AlertDialog(
           backgroundColor: secondaryColor,
           title: Text(
-            'Select Image Source',
-            style: TextStyle(color: Colors.white),
+            StringConstants.selectImageSource,
+            style: StyleConstants.whiteText,
           ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
                 leading: Icon(Icons.camera_alt, color: primaryColor),
-                title: Text('Camera', style: TextStyle(color: Colors.white)),
+                title: Text(StringConstants.camera, style: StyleConstants.whiteText),
                 onTap: () => Navigator.of(context).pop(ImageSource.camera),
               ),
               ListTile(
                 leading: Icon(Icons.photo_library, color: primaryColor),
-                title: Text('Gallery', style: TextStyle(color: Colors.white)),
+                title: Text(StringConstants.gallery, style: StyleConstants.whiteText),
                 onTap: () => Navigator.of(context).pop(ImageSource.gallery),
               ),
             ],
@@ -238,7 +239,7 @@ class _ChatPopupState extends State<ChatPopup> with TickerProviderStateMixin {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text('Cancel', style: TextStyle(color: Colors.white70)),
+              child: Text(StringConstants.cancel, style: StyleConstants.white70Text),
             ),
           ],
         );
@@ -250,7 +251,7 @@ class _ChatPopupState extends State<ChatPopup> with TickerProviderStateMixin {
     try {
       setState(() {
         _messages.add(ChatMessage(
-          text: "🎨 Generating your professional medical headshot...",
+          text: StringConstants.generatingImageMessage,
           isUser: false,
           timestamp: DateTime.now(),
         ));
@@ -293,7 +294,7 @@ class _ChatPopupState extends State<ChatPopup> with TickerProviderStateMixin {
         setState(() {
           _isImageProcessing = false;
           _messages.add(ChatMessage(
-            text: "✅ **Professional Medical Headshot Generated**\n\n📥 **Download Your Professional Headshot**\n\n*Click the download button below to save your professional medical headshot.*",
+            text: "${StringConstants.headShotGenerated}\n\n${StringConstants.downloadHeadshot}\n\n${StringConstants.downloadInstruction}",
             isUser: false,
             timestamp: DateTime.now(),
             hasGeneratedImage: true,
@@ -304,7 +305,7 @@ class _ChatPopupState extends State<ChatPopup> with TickerProviderStateMixin {
         setState(() {
           _isImageProcessing = false;
           _messages.add(ChatMessage(
-            text: "✅ **Professional Medical Headshot Generated**\n\n📥 **Download Ready**\n\n*Your professional medical headshot is ready for download.*",
+            text: "${StringConstants.headShotGenerated}\n\n${StringConstants.downloadReady}\n\n${StringConstants.headshotReadyInstruction}",
             isUser: false,
             timestamp: DateTime.now(),
             hasGeneratedImage: true,
@@ -317,7 +318,7 @@ class _ChatPopupState extends State<ChatPopup> with TickerProviderStateMixin {
       setState(() {
         _isImageProcessing = false;
         _messages.add(ChatMessage(
-          text: "❌ **Error generating image**\n\n*Please try again later.*",
+          text: StringConstants.imageGenerationError,
           isUser: false,
           timestamp: DateTime.now(),
         ));
@@ -811,27 +812,27 @@ class _ChatPopupState extends State<ChatPopup> with TickerProviderStateMixin {
 
     // More database-focused response system
     if (message.contains('help') || message.contains('support')) {
-      return "I can perform advanced conference data analysis! Ask me about:\n\n🔍 **Cross-Database Analysis:**\n• Email cross-references (same person, multiple papers)\n• Institution-wide participation tracking\n• City-wise distribution analysis\n• Payment status breakdowns\n\n📊 **Detailed Insights:**\n• Abstract synopsis analysis\n• Multi-paper authors\n• Faculty by designation & city\n• Cross-collection connections\n\n🖼️ **New: Image Processing**\n• Upload photos for professional medical conversion\n• AI-powered styling suggestions\n• Medical accessories recommendations";
+      return "${StringConstants.helpAnalysisTitle}\n\n${StringConstants.crossDatabaseAnalysis}\n• ${StringConstants.emailCrossReferences}\n• ${StringConstants.institutionTracking}\n• ${StringConstants.cityDistribution}\n• ${StringConstants.paymentBreakdowns}\n\n${StringConstants.detailedInsights}\n• ${StringConstants.abstractAnalysis}\n• ${StringConstants.multiPaperAuthors}\n• ${StringConstants.facultyByDesignation}\n• ${StringConstants.crossCollectionConnections}\n\n${StringConstants.imageProcessingFeature}\n• ${StringConstants.professionalConversion}\n• ${StringConstants.aiStyling}\n• ${StringConstants.medicalAccessories}";
     } else if (message.contains('email') || message.contains('same person')) {
-      return "I can track people across databases using email addresses:\n• Find authors with multiple paper submissions\n• Cross-reference faculty and registration data\n• Identify participants active in multiple areas\n• Show complete profiles across all collections\n\nTry asking: 'Show me people with multiple papers' or 'Cross-reference emails across databases'";
+      return "${StringConstants.emailTracking}\n• ${StringConstants.findMultipleSubmissions}\n• ${StringConstants.crossReferenceFaculty}\n• ${StringConstants.identifyParticipants}\n• ${StringConstants.completeProfiles}\n\n${StringConstants.tryAskingEmail}";
     } else if (message.contains('city') || message.contains('cities')) {
-      return "City-wise analysis available:\n• Registration distribution by city\n• Faculty location mapping\n• Geographic participation patterns\n• City-based demographic insights\n\nI'll analyze all databases to show city-wise statistics and trends.";
+      return "${StringConstants.cityAnalysisAvailable}\n• ${StringConstants.registrationByCity}\n• ${StringConstants.facultyMapping}\n• ${StringConstants.geographicPatterns}\n• ${StringConstants.cityDemographics}\n\n${StringConstants.analyzeDatabasesCity}";
     } else if (message.contains('paid') ||
         message.contains('unpaid') ||
         message.contains('payment')) {
-      return "Payment status analysis includes:\n• Paid vs unpaid member breakdown\n• Payment completion rates\n• Revenue tracking by category\n• Outstanding payment identification\n\nI'll check the registration database for payment status details.";
+      return "${StringConstants.paymentAnalysisIncludes}\n• ${StringConstants.paidVsUnpaid}\n• ${StringConstants.paymentRates}\n• ${StringConstants.revenueTracking}\n• ${StringConstants.outstandingPayments}\n\n${StringConstants.checkRegistrationDatabase}";
     } else if (message.contains('institution') ||
         message.contains('college') ||
         message.contains('university')) {
-      return "Institution analysis across all databases:\n• Faculty representation by institution\n• Student/member registrations per institution\n• Research paper submissions by institution\n• Cross-database institutional insights\n• Total participation metrics per institution";
+      return "${StringConstants.institutionAnalysisAcross}\n• ${StringConstants.facultyRepresentation}\n• ${StringConstants.studentRegistrations}\n• ${StringConstants.researchSubmissions}\n• ${StringConstants.crossDatabaseInsights}\n• ${StringConstants.participationMetrics}";
     } else if (message.contains('abstract') ||
         message.contains('synopsis') ||
         message.contains('research')) {
-      return "Advanced abstract analysis:\n• Abstract synopsis content insights\n• Research topic trend analysis\n• Multi-paper author identification\n• Collaboration pattern analysis\n• Keyword frequency and themes\n\nI can read and analyze the actual abstract content for detailed insights.";
+      return "${StringConstants.advancedAbstractAnalysis}\n• ${StringConstants.synopsisContentInsights}\n• ${StringConstants.researchTopicTrends}\n• ${StringConstants.multiPaperAuthorId}\n• ${StringConstants.collaborationPatterns}\n• ${StringConstants.keywordFrequency}\n\n${StringConstants.analyzeAbstractContent}";
     } else if (message.contains('faculty') || message.contains('teacher')) {
-      return "Comprehensive faculty analysis:\n• Designation-wise breakdown\n• Institution and city distribution\n• Cross-reference with registration data\n• Faculty research participation\n• Detailed faculty profiles by institution";
+      return "${StringConstants.comprehensiveFacultyAnalysis}\n• ${StringConstants.designationBreakdown}\n• ${StringConstants.institutionCityDistribution}\n• ${StringConstants.crossRefRegistration}\n• ${StringConstants.facultyResearchParticipation}\n• ${StringConstants.detailedFacultyProfiles}";
     } else {
-      return "🤖 **Advanced Conference Database Analyst**\n\nI can perform sophisticated cross-database analysis:\n\n📊 **Cross-Reference Capabilities:**\n• Email-based participant tracking\n• Multi-paper author identification\n• Institution-wide participation analysis\n• City and geographic distribution\n• Payment status monitoring\n\n📝 **Content Analysis:**\n• Abstract synopsis insights\n• Research topic trends\n• Faculty designation patterns\n• Member category breakdowns\n\n🖼️ **NEW: Image Processing**\n• Professional medical person conversion\n• AI-powered styling suggestions\n• Medical accessories recommendations\n• Upload photos using the camera button!\n\n💡 **Try asking:**\n• 'Show payment status breakdown'\n• 'Find people with multiple papers'\n• 'Analyze participation by city'\n• 'Cross-reference institution data'\n• 'Show abstract synopsis insights'\n• Or upload an image for professional conversion!\n\nWhat specific analysis would you like me to perform?";
+      return "${StringConstants.advancedAnalyst}\n\n${StringConstants.sophisticatedAnalysis}\n\n${StringConstants.crossRefCapabilities}\n• ${StringConstants.emailParticipantTracking}\n• ${StringConstants.multiPaperIdentification}\n• ${StringConstants.institutionAnalysis}\n• ${StringConstants.geographicDistribution}\n• ${StringConstants.paymentMonitoring}\n\n${StringConstants.contentAnalysis}\n• ${StringConstants.synopsisInsights}\n• ${StringConstants.topicTrends}\n• ${StringConstants.facultyPatterns}\n• ${StringConstants.memberBreakdowns}\n\n${StringConstants.newImageProcessing}\n• ${StringConstants.professionalConversion}\n• ${StringConstants.aiStyling}\n• ${StringConstants.medicalAccessories}\n• ${StringConstants.uploadPhotos}\n\n${StringConstants.tryAsking}\n• '${StringConstants.paymentStatusBreakdown}'\n• '${StringConstants.findMultiplePapers}'\n• '${StringConstants.analyzeByCity}'\n• '${StringConstants.crossReferenceInstitution}'\n• '${StringConstants.showAbstractInsights}'\n• ${StringConstants.uploadImageConversion}\n\n${StringConstants.whatAnalysis}";
     }
   }
 
@@ -904,12 +905,8 @@ class _ChatPopupState extends State<ChatPopup> with TickerProviderStateMixin {
                                   SizedBox(width: 12),
                                   Expanded(
                                     child: Text(
-                                      "Chat Support",
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                      ),
+                                      StringConstants.chatTitle,
+                                      style: StyleConstants.whiteTextLarge,
                                     ),
                                   ),
                                   IconButton(
@@ -935,8 +932,8 @@ class _ChatPopupState extends State<ChatPopup> with TickerProviderStateMixin {
                                         (_isLoading || _isImageProcessing)) {
                                       return TypingIndicator(
                                         message: _isImageProcessing 
-                                          ? "🖼️ Generating professional medical headshot..."
-                                          : "AI is typing...",
+                                          ? StringConstants.generatingHeadshot
+                                          : StringConstants.aiTyping,
                                       );
                                     }
                                     return ChatMessageWidget(
@@ -981,7 +978,7 @@ class _ChatPopupState extends State<ChatPopup> with TickerProviderStateMixin {
                                                 color: Colors.white, size: 16),
                                             padding: EdgeInsets.zero,
                                             constraints: BoxConstraints(),
-                                            tooltip: "Upload photo for professional medical headshot generation",
+                                            tooltip: StringConstants.cameraTooltip,
                                           ),
                                   ),
                                   SizedBox(width: 6),
@@ -989,27 +986,13 @@ class _ChatPopupState extends State<ChatPopup> with TickerProviderStateMixin {
                                     child: TextField(
                                       controller: _messageController,
                                       enabled: !_isLoading && !_isImageProcessing,
-                                      style: TextStyle(color: Colors.white, fontSize: 14),
-                                      decoration: InputDecoration(
+                                      style: StyleConstants.chatMessageText,
+                                      decoration: StyleConstants.chatInputFieldDecoration.copyWith(
                                         hintText: _isLoading
-                                            ? "AI is responding..."
+                                            ? StringConstants.aiResponding
                                             : _isImageProcessing
-                                                ? "Generating professional headshot..."
-                                                : "Type your message...",
-                                        hintStyle:
-                                            TextStyle(color: Colors.grey, fontSize: 12),
-                                        border: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(20),
-                                          borderSide: BorderSide.none,
-                                        ),
-                                        filled: true,
-                                        fillColor: secondaryColor,
-                                        contentPadding: EdgeInsets.symmetric(
-                                          horizontal: 12,
-                                          vertical: 8,
-                                        ),
-                                        isDense: true,
+                                                ? StringConstants.generatingHeadshot
+                                                : StringConstants.typeMessage,
                                       ),
                                       onSubmitted: (_isLoading || _isImageProcessing)
                                           ? null

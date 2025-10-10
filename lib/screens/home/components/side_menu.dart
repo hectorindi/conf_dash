@@ -1,4 +1,5 @@
 import 'package:admin/core/constants/color_constants.dart';
+import 'package:admin/core/constants/string_constants.dart';
 import 'package:admin/screens/forms/event_registration_widget.dart';
 import 'package:admin/screens/home/components/expansion_tile_list.dart';
 import 'package:flutter/material.dart';
@@ -30,7 +31,7 @@ class SideMenu extends StatelessWidget {
                 SizedBox(
                   height: defaultPadding,
                 ),
-                Text("Confrence Dashboard")
+                Text(StringConstants.confDashboardTitle)
               ],
             )),
             CustomExpansionTileList(elementList: [

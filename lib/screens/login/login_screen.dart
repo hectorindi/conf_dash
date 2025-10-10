@@ -1,4 +1,5 @@
 import 'package:admin/core/constants/color_constants.dart';
+import 'package:admin/core/constants/string_constants.dart';
 import 'package:admin/core/widgets/app_button_widget.dart';
 import 'package:admin/core/widgets/input_widget.dart';
 import 'package:admin/models/login_object.dart';
@@ -84,7 +85,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
       } else {
         // Handle login failure
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(loginResult.error ?? 'Login failed')),
+          SnackBar(content: Text(loginResult.error ?? StringConstants.loginFailed)),
         );
       }
     } catch (error) {
@@ -125,7 +126,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
         // Access LoginObject properties
         print('Welcome ${loginResult.uid}');
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Registered'), backgroundColor: Colors.green),
+          SnackBar(content: Text(StringConstants.registered), backgroundColor: Colors.green),
         );
         Future.delayed(Duration(seconds: 1), () {
           Navigator.pushReplacement(
@@ -136,7 +137,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
       } else {
         // Handle login failure
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(loginResult.error ?? 'Register failed')),
+          SnackBar(content: Text(loginResult.error ?? StringConstants.registerFailed)),
         );
       }
     } catch (error) {
@@ -335,7 +336,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                       });
                     },
                   ),
-                  Text("Remember Me")
+                  Text(StringConstants.rememberMe)
                 ],
               ),
             ],
@@ -440,7 +441,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                       });
                     },
                   ),
-                  Text("Remember Me")
+                  Text(StringConstants.rememberMe)
                 ],
               ),
               TextButton(

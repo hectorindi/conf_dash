@@ -1,3 +1,4 @@
+import 'package:admin/core/constants/string_constants.dart';
 import 'package:admin/core/models/data.dart';
 import 'package:admin/core/widgets/wrapper.dart';
 import 'package:admin/screens/dashboard/components/list_calendar_data.dart';
@@ -40,7 +41,7 @@ class _List extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text("🔥 Upcoming events"),
+        Text(StringConstants.upcomingEvents),
         SizedBox(
           height: 8,
         ),

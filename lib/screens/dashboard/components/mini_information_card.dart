@@ -1,4 +1,5 @@
 import 'package:admin/core/constants/color_constants.dart';
+import 'package:admin/core/constants/string_constants.dart';
 import 'package:admin/models/daily_info_model.dart';
 import 'package:admin/data/registration_service.dart';
 import 'package:admin/responsive.dart';
@@ -24,14 +25,14 @@ class _MiniInformationState extends State<MiniInformation> {
       if (success) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Registration data exported successfully'),
+            content: Text(StringConstants.exportSuccess),
             backgroundColor: Colors.green,
           ),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to export registration data'),
+            content: Text(StringConstants.exportFailed),
             backgroundColor: Colors.red,
           ),
         );
@@ -39,7 +40,7 @@ class _MiniInformationState extends State<MiniInformation> {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error exporting data: $e'),
+          content: Text('${StringConstants.exportError}$e'),
           backgroundColor: Colors.red,
         ),
       );
@@ -187,18 +188,18 @@ class _MiniInformationState extends State<MiniInformation> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Import Results"),
+          title: Text(StringConstants.importResults),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("✅ Successfully imported: $successCount records"),
+              Text("${StringConstants.successfullyImported}$successCount${StringConstants.records}"),
               if (failCount > 0) ...[
                 SizedBox(height: 10),
-                Text("❌ Failed to import: $failCount records"),
+                Text("${StringConstants.failedToImport}$failCount${StringConstants.records}"),
                 if (errors.isNotEmpty) ...[
                   SizedBox(height: 10),
-                  Text("Errors:",
+                  Text(StringConstants.errors,
                       style: TextStyle(fontWeight: FontWeight.bold)),
                   Container(
                     height: 100,
@@ -219,7 +220,7 @@ class _MiniInformationState extends State<MiniInformation> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text("OK"),
+              child: Text(StringConstants.ok),
             ),
           ],
         );
@@ -232,12 +233,12 @@ class _MiniInformationState extends State<MiniInformation> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Error"),
+          title: Text(StringConstants.error),
           content: Text(message),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text("OK"),
+              child: Text(StringConstants.ok),
             ),
           ],
         );
@@ -324,7 +325,7 @@ class InformationCard extends StatelessWidget {
         }
         
         if (snapshot.hasError) {
-          print('Error loading daily data: ${snapshot.error}');
+          print('${StringConstants.errorLoadingDailyData}${snapshot.error}');
           // Use static data as fallback
           final fallbackData = getStaticDailyDatas();
           return _buildGrid(fallbackData);
